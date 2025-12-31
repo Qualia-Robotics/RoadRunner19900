@@ -26,7 +26,7 @@ public class Tele_op extends LinearOpMode {
     private DcMotor fl, bl, fr, br;
 
     // Intake motors
-    private DcMotor leftIntake, perp, leftShootMotor, par;
+    private DcMotor leftIntake, rightIntake, leftShootMotor, rightShootMotor;
 
     // Turret + kicker
     private CRServo leftTurretServo, rightTurretServo, kickerServo;
@@ -56,10 +56,10 @@ public class Tele_op extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "rightFront");
         br = hardwareMap.get(DcMotor.class, "rightBack");
         leftShootMotor = hardwareMap.get(DcMotor.class, "leftShootMotor");
-        par = hardwareMap.get(DcMotor.class, "par");
+        rightShootMotor = hardwareMap.get(DcMotor.class, "rightShootMotor");
 
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
-        perp = hardwareMap.get(DcMotor.class, "perp");
+        rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
 
         leftTurretServo = hardwareMap.get(CRServo.class, "leftTurretServo");
         rightTurretServo = hardwareMap.get(CRServo.class, "rightTurretServo");
@@ -119,7 +119,7 @@ public class Tele_op extends LinearOpMode {
         bl.setDirection(DcMotor.Direction.REVERSE);
 
         leftIntake.setDirection(DcMotor.Direction.REVERSE);
-        perp.setDirection(DcMotor.Direction.FORWARD);
+        rightIntake.setDirection(DcMotor.Direction.FORWARD);
 
         // Reset intake encoder (used for angle calc)
         leftIntake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -132,6 +132,7 @@ public class Tele_op extends LinearOpMode {
         // ---------------------
         // Main loop
         // ---------------------
+        double frequency = 0;
         while (opModeIsActive()) {
 
             // ---------------------
@@ -156,7 +157,7 @@ public class Tele_op extends LinearOpMode {
             double finalPower = intakePower - outtakePower;
 
             leftIntake.setPower(finalPower);
-            perp.setPower(finalPower);
+            rightIntake.setPower(finalPower);
 
             // ---------------------
             // Turret rotation (bumpers)
@@ -171,78 +172,66 @@ public class Tele_op extends LinearOpMode {
             }
             double newTime = getRuntime();
             double loopTime = newTime - oldTime;
-            double frequency = 1 / loopTime;
+            frequency = 1 / loopTime;
             oldTime = newTime;
 
 
 // D-pad DOWN → stop & close gate (toggle OFF)
-            if (gamepad1.dpad_up && shooterStartTime == 0) {
-                shooterStartTime = getRuntime();
+            if (gamepad1.dpad_up) {
+                gateServo.setPosition(GATE_OPEN_POS);
             }
-
-// Shooter active
-            if (shooterStartTime > 0) {
-
-                leftShootMotor.setPower(0.8);
-                par.setPower(-0.8);
-
-                if (getRuntime() - shooterStartTime >= 1) {
-                    gateServo.setPosition(GATE_OPEN_POS);
-                }
-            }
+        }
 
 // Stop shooter
-            if (gamepad1.dpad_down) {
-                shooterStartTime = 0;
-                gateServo.setPosition(GATE_CLOSED_POS);
-                leftShootMotor.setPower(0);
-                par.setPower(0);
-            }
-            if (gamepad1.dpad_left) {
-                leftShootMotor.setPower(0);
-                par.setPower(0);
-            }
-            if (gamepad1.right_bumper) {
-                leftTurretServo.setPower(1.0);
-                rightTurretServo.setPower(1.0);
-            } else if (gamepad1.left_bumper) {
-                leftTurretServo.setPower(-1.0);
-                rightTurretServo.setPower(-1.0);
-            } else {
-                leftTurretServo.setPower(0);
-                rightTurretServo.setPower(0);
-            }
+        if (gamepad1.dpad_down) {
+            gateServo.setPosition(GATE_CLOSED_POS);
+            leftShootMotor.setPower(0);
+            rightShootMotor.setPower(0);
+        }
+        if (gamepad1.dpad_left) {
+            leftShootMotor.setPower(0);
+            rightShootMotor.setPower(0);
+        }
+        if (gamepad1.right_bumper) {
+            leftTurretServo.setPower(1.0);
+            rightTurretServo.setPower(1.0);
+        } else if (gamepad1.left_bumper) {
+            leftTurretServo.setPower(-1.0);
+            rightTurretServo.setPower(-1.0);
+        } else {
+            leftTurretServo.setPower(0);
+            rightTurretServo.setPower(0);
+        }
 
-            // ---------------------
-            // Kicker (X button)
-            // ---------------------
-            if (gamepad1.x) {
-                kickerServo.setPower(1.0);
-                leftIntake.setPower(1.0);
-                perp.setPower(1.0);
-            } else {
-                kickerServo.setPower(0.0);
-            }
+        // ---------------------
+        // Kicker (X button)
+        // ---------------------
+        if (gamepad1.x) {
+            kickerServo.setPower(1.0);
+            leftIntake.setPower(1.0);
+            rightIntake.setPower(1.0);
+        } else {
+            kickerServo.setPower(0.0);
+        }
 
-            // ---------------------
-            // Turret angle telemetry (from intake encoder)
-            //---------------------
-            int ticks = leftIntake.getCurrentPosition();
-            lastAngle = ((double) ticks / COUNTS_PER_REV) * 360.0 / 4 / 4;
-
+        // ---------------------
+        // Turret angle telemetry (from intake encoder)
+        //---------------------
+        int ticks = leftIntake.getCurrentPosition();
+        lastAngle = ((double) ticks / COUNTS_PER_REV) * 360.0 / 4 / 4;
 
 
-            //gets the current Position (x & y in mm, and heading in degrees) of the robot, and prints it.
+        //gets the current Position (x & y in mm, and heading in degrees) of the robot, and prints it.
 
-            Pose2D pos = pinpoint.getPosition();
-            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.INCH), pos.getY(DistanceUnit.INCH), pos.getHeading(AngleUnit.DEGREES));
-            telemetry.addData("Position", data);
+        Pose2D pos = pinpoint.getPosition();
+        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.INCH), pos.getY(DistanceUnit.INCH), pos.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("Position", data);
 
 
-            //gets the current Velocity (x & y in mm/sec and heading in degrees/sec) and prints it.
+        //gets the current Velocity (x & y in mm/sec and heading in degrees/sec) and prints it.
 
-            String velocity = String.format(Locale.US, "{XVel: %.3f, YVel: %.3f, HVel: %.3f}", pinpoint.getVelX(DistanceUnit.INCH), pinpoint.getVelY(DistanceUnit.INCH), pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
-            telemetry.addData("Velocity", velocity);
+        String velocity = String.format(Locale.US, "{XVel: %.3f, YVel: %.3f, HVel: %.3f}", pinpoint.getVelX(DistanceUnit.INCH), pinpoint.getVelY(DistanceUnit.INCH), pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
+        telemetry.addData("Velocity", velocity);
 
 
             /*
@@ -255,17 +244,15 @@ public class Tele_op extends LinearOpMode {
             FAULT_Y_POD_NOT_DETECTED - The device does not detect a Y pod plugged in
             FAULT_BAD_READ - The firmware detected a bad I²C read, if a bad read is detected, the device status is updated and the previous position is reported
             */
-            telemetry.addData("Status", pinpoint.getDeviceStatus());
+        telemetry.addData("Status", pinpoint.getDeviceStatus());
 
-            telemetry.addData("Pinpoint Frequency", pinpoint.getFrequency()); //prints/gets the current refresh rate of the Pinpoint
+        telemetry.addData("Pinpoint Frequency", pinpoint.getFrequency()); //prints/gets the current refresh rate of the Pinpoint
 
-            telemetry.addData("REV Hub Frequency: ", frequency); //prints the control system refresh rate
-            telemetry.addData("Gate position:", gateServo.getPosition());
-            telemetry.update()
-            ;
+        telemetry.addData("Gate position:", gateServo.getPosition());
+        telemetry.update()
+        ;
 
 
-            sleep(20);
-        }
+        sleep(20);
     }
-}
+    }
