@@ -26,7 +26,7 @@ public class Shoot {
             double rightpow = 0;
             if (!initialized) {
                 leftShootMotor.setPower(0.8);
-                rightShootMotor.setPower(0.8);
+                rightShootMotor.setPower(-0.8);
                 rightpow = 0.8;
                 initialized = true;
             }
