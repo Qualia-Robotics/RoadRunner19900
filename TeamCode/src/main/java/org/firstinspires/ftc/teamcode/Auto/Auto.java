@@ -25,6 +25,7 @@ public class Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
         // instantiate your MecanumDrive at a particular pose.
+        waitForStart();
         Pose2d initialPose = new Pose2d(54.5, -46.5, Math.toRadians(-45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
@@ -39,7 +40,11 @@ public class Auto extends LinearOpMode {
                 .lineToX(47.5)
                 .waitSeconds(3);*/
                 .strafeTo(new Vector2d(17, -9.3))//score position/angle
-                .turn(Math.toRadians(0));
+                .waitSeconds(.2)
+                //.turn(Math.toRadians());
+                //shoot here
+                .turn(Math.toRadians(-45))
+                .lineToY(-50);
 
 
         Actions.runBlocking(
