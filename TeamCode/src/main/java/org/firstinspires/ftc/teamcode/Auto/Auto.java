@@ -38,7 +38,7 @@ public class Auto extends LinearOpMode {
                 .turn(Math.toRadians(180))
                 .lineToX(47.5)
                 .waitSeconds(3);*/
-                .strafeTo(new Vector2d(17, -9.3))
+                .strafeTo(new Vector2d(17, -9.3))//score position/angle
                 .turn(Math.toRadians(-45));
 
 
