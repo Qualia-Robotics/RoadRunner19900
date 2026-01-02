@@ -25,7 +25,7 @@ public class Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
         // instantiate your MecanumDrive at a particular pose.
-        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(-45));
+        Pose2d initialPose = new Pose2d(54.5, -46.5, Math.toRadians(-45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
                 .lineToYSplineHeading(33, Math.toRadians(0))
