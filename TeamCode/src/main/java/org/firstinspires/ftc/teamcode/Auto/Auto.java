@@ -28,16 +28,19 @@ public class Auto extends LinearOpMode {
         Pose2d initialPose = new Pose2d(54.5, -46.5, Math.toRadians(-45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                .lineToYSplineHeading(33, Math.toRadians(0))
+                /*.lineToYSplineHeading(-9.3, Math.toRadians(-45))
                 .waitSeconds(2)
                 .setTangent(Math.toRadians(90))
-                .lineToY(48)
+                .lineToY(-9.3)
                 .setTangent(Math.toRadians(0))
-                .lineToX(32)
+                .lineToX(17)
                 .strafeTo(new Vector2d(44.5, 30))
                 .turn(Math.toRadians(180))
                 .lineToX(47.5)
-                .waitSeconds(3);
+                .waitSeconds(3);*/
+                .strafeTo(new Vector2d(17, -9.3))
+                .turn(Math.toRadians(-45));
+
 
         Actions.runBlocking(
                 new SequentialAction(
