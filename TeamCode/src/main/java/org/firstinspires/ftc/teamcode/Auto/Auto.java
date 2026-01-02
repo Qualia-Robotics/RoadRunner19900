@@ -38,5 +38,12 @@ public class Auto extends LinearOpMode {
                 .turn(Math.toRadians(180))
                 .lineToX(47.5)
                 .waitSeconds(3);
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        tab1.build()
+
+                )
+        );
     }
     }
