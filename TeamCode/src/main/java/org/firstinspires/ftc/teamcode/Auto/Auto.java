@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.Shoot;
+
 
 @Config
 @Autonomous(name = "Auto", group = "Autonomous")
@@ -29,6 +31,7 @@ public class Auto extends LinearOpMode {
         Pose2d initialPose = new Pose2d(40.66, -56.77, Math.toRadians(0));
         //Pose2d shootPose = new Pose2d(17, -9.3, Math.toRadians(-45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        Shoot shoot = new Shoot(hardwareMap);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
                 //lineToYSplineHeading(-9.3, Math.toRadians(-45))
                 //.waitSeconds(2)
@@ -52,7 +55,9 @@ public class Auto extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        tab1.build()
+                        tab1.build(),
+                        Shoot.shoot_score()
+
 
                 )
         );

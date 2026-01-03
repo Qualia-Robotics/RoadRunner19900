@@ -6,43 +6,48 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Shoot {
 
     private DcMotorEx leftShootMotor, rightShootMotor;
-
-    public Shoot(HardwareMap hardwareMap) {
+    private Servo gateServo;
+    private final double GATE_OPEN_POS = .4;    // adjust
+    private final double GATE_CLOSED_POS = 0.1;  // adjust
+    
+    public Object Shoot(HardwareMap hardwareMap) {
         DcMotorEx leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
         DcMotorEx rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
-    }
-    public class shoot_To_Score implements Action {
-        // checks if the lift motor has been powered on
-        private boolean initialized = false;
+        gateServo = hardwareMap.get(Servo.class, "gateServo");
+        
 
-        // actions are formatted via telemetry packets as below
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            // powers on motor, if it is not on
-            double rightpow = 0;
-            if (!initialized) {
-                leftShootMotor.setPower(0.8);
-                rightShootMotor.setPower(-0.8);
-                rightpow = 0.8;
-                initialized = true;
+             class shoot_To_Score implements Action {
+                @Override
+                public boolean run(@NonNull TelemetryPacket packet) {
+                    leftShootMotor.setPower(0.8);
+                    rightShootMotor.setPower(0.8);
+                    gateServo.setPosition(0.4);
+                    return false;
+                }
+            }
+             Action shoot_score() {
+                return new shoot_To_Score();
             }
 
-            // checks lift's current position
-
-
-            if (rightpow == 0.8) {
-                // true causes the action to rerun
-                return true;
-            } else {
-                // false stops action rerun
-                leftShootMotor.setPower(0);
-                rightShootMotor.setPower(0);
-                return false;
+            public class NoShooting implements Action {
+                @Override
+                public boolean run(@NonNull TelemetryPacket packet) {
+                    gateServo.setPosition(-4);
+                    return false;
+                }
+            }
+            Action stopShooting() {
+                return new NoShooting();
             }
         }
     }
-}
+    
+
+
+    
+
