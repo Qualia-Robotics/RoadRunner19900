@@ -26,25 +26,28 @@ public class Auto extends LinearOpMode {
     public void runOpMode() {
         // instantiate your MecanumDrive at a particular pose.
         waitForStart();
-        Pose2d initialPose = new Pose2d(54.5, -46.5, Math.toRadians(-45));
+        Pose2d initialPose = new Pose2d(40.66, -56.77, Math.toRadians(0));
+        //Pose2d shootPose = new Pose2d(17, -9.3, Math.toRadians(-45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                /*.lineToYSplineHeading(-9.3, Math.toRadians(-45))
-                .waitSeconds(2)
-                .setTangent(Math.toRadians(90))
-                .lineToY(-9.3)
-                .setTangent(Math.toRadians(0))
-                .lineToX(17)
-                .strafeTo(new Vector2d(44.5, 30))
-                .turn(Math.toRadians(180))
-                .lineToX(47.5)
-                .waitSeconds(3);*/
-                .strafeTo(new Vector2d(17, -9.3))//score position/angle
-                .waitSeconds(.2)
-                //.turn(Math.toRadians());
+                //lineToYSplineHeading(-9.3, Math.toRadians(-45))
+                //.waitSeconds(2)
+                //.setTangent(Math.toRadians(90))
+                //.lineToX(17)
+                //.lineToY(-9.3)
+                //.setTangent(Math.toRadians(0))
+                //.turnTo(-45);
+                //.setTangent(0)
+                //.splineToSplineHeading(new Pose2d(17, -9.3, Math.toRadians(-45)), Math.toRadians(-300));
+                .strafeToLinearHeading(new Vector2d(17, -9.3), Math.toRadians(-45));
+                //.waitSeconds(1);
+
+                //.setTangent(0)
+                //.splineToSplineHeading(new Pose2d(20.7,-22.5,-90), Math.PI/2);
+                //.strafeToHea(new Vector2d(17, -9.3))//score position/angle
+                //.turn(Math.toRadians(-45))
                 //shoot here
-                .turn(Math.toRadians(-45))
-                .lineToY(-50);
+                //.lineToY(-50);
 
 
         Actions.runBlocking(
