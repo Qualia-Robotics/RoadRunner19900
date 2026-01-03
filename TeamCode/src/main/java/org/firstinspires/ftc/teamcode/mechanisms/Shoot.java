@@ -12,42 +12,46 @@ public class Shoot {
 
     private DcMotorEx leftShootMotor, rightShootMotor;
     private Servo gateServo;
-    private final double GATE_OPEN_POS = .4;    // adjust
-    private final double GATE_CLOSED_POS = 0.1;  // adjust
-    
-    public Object Shoot(HardwareMap hardwareMap) {
-        DcMotorEx leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
-        DcMotorEx rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
+
+    private static final double GATE_OPEN_POS = 0.4;
+    private static final double GATE_CLOSED_POS = 0.1;
+
+    // ✅ Constructor
+    public Shoot(HardwareMap hardwareMap) {
+        leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
+        rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
         gateServo = hardwareMap.get(Servo.class, "gateServo");
-        
+    }
 
-             class shoot_To_Score implements Action {
-                @Override
-                public boolean run(@NonNull TelemetryPacket packet) {
-                    leftShootMotor.setPower(0.8);
-                    rightShootMotor.setPower(0.8);
-                    gateServo.setPosition(0.4);
-                    return false;
-                }
-            }
-             Action shoot_score() {
-                return new shoot_To_Score();
-            }
+    // ✅ Shoot action
 
-            public class NoShooting implements Action {
-                @Override
-                public boolean run(@NonNull TelemetryPacket packet) {
-                    gateServo.setPosition(-4);
-                    return false;
-                }
-            }
-            Action stopShooting() {
-                return new NoShooting();
-            }
+    public class ShootToScore implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            leftShootMotor.setPower(0.8);
+            rightShootMotor.setPower(-0.8); // likely correct for mirrored motors
+            gateServo.setPosition(GATE_OPEN_POS);
+            return false;
         }
     }
-    
+    public Action shootScore() {
+        return new ShootToScore();
+    }
+
+    // ✅ Stop shooting action
 
 
-    
+    private class NoShooting implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            leftShootMotor.setPower(0.0);
+            rightShootMotor.setPower(0.0);
+            gateServo.setPosition(GATE_CLOSED_POS);
+            return false;
+        }
+        public Action stopShooting() {
 
+            return new NoShooting();
+        }
+    }
+}
