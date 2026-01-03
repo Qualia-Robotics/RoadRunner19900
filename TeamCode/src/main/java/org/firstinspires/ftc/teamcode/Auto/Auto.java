@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.Auto;
-import androidx.annotation.NonNull;
 
 // RR-specific imports
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
+        import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -14,10 +11,9 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 // Non-RR imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+
+        import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Shoot;
 
 
@@ -32,6 +28,7 @@ public class Auto extends LinearOpMode {
         //Pose2d shootPose = new Pose2d(17, -9.3, Math.toRadians(-45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Shoot Shoot = new Shoot(hardwareMap);
+        Intake Intake = new Intake(hardwareMap);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
                 //lineToYSplineHeading(-9.3, Math.toRadians(-45))
                 //.waitSeconds(2)
@@ -56,6 +53,7 @@ public class Auto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         tab1.build(),
+                        Intake.Intaking(),
                         Shoot.shootScore()
 
 
