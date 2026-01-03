@@ -2,7 +2,8 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 // RR-specific imports
 import com.acmerobotics.dashboard.config.Config;
-        import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -53,13 +54,13 @@ public class Auto extends LinearOpMode {
 
 
         Actions.runBlocking(
+                new ParallelAction(
+                        Shoot.shootScore(),
                 new SequentialAction(
                         tab1.build(),
-                        Shoot.shootScore(),
                         Intake.Intaking(),
-                        Intake.stopIntake(),
-                        Shoot.stopShooting()
-                )
+                        Intake.stopIntake()
+                ))
         );
     }
     }
