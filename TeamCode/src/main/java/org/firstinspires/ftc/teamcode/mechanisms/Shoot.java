@@ -13,7 +13,7 @@ public class Shoot {
     private DcMotorEx leftShootMotor, rightShootMotor;
     private Servo gateServo;
 
-    private static final double GATE_OPEN_POS = 0.4;
+    private static final double GATE_OPEN_POS = 0.5;
     private static final double GATE_CLOSED_POS = 0.1;
 
     // ✅ Constructor
@@ -24,7 +24,9 @@ public class Shoot {
     }
 
     // ✅ Shoot action
-
+    public Action shootScore() {
+        return new ShootToScore();
+    }
     public class ShootToScore implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
@@ -34,14 +36,13 @@ public class Shoot {
             return false;
         }
     }
-    public Action shootScore() {
-        return new ShootToScore();
-    }
 
     // ✅ Stop shooting action
 
-
-    private class NoShooting implements Action {
+    public Action stopShooting() {
+        return new NoShooting();
+    }
+    public class NoShooting implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             leftShootMotor.setPower(0.0);
@@ -49,9 +50,6 @@ public class Shoot {
             gateServo.setPosition(GATE_CLOSED_POS);
             return false;
         }
-        public Action stopShooting() {
 
-            return new NoShooting();
-        }
     }
 }

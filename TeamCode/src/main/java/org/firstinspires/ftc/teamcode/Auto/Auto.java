@@ -15,6 +15,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
         import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Shoot;
+import org.firstinspires.ftc.teamcode.mechanisms.Shoot.NoShooting;
+
 
 
 @Config
@@ -53,10 +55,10 @@ public class Auto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         tab1.build(),
+                        Shoot.shootScore(),
                         Intake.Intaking(),
-                        Shoot.shootScore()
-
-
+                        Intake.stopIntake(),
+                        Shoot.stopShooting()
                 )
         );
     }
