@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -15,7 +16,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
         import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Shoot;
-import org.firstinspires.ftc.teamcode.mechanisms.Shoot.NoShooting;
 
 
 
@@ -58,7 +58,7 @@ public class Auto extends LinearOpMode {
                         tab1.build(),
                         Shoot.shootScore(),
                         Intake.Intaking(),
-                        sleep(500),
+                        new SleepAction(500),
                         Intake.stopIntake()
                 ))
         );
