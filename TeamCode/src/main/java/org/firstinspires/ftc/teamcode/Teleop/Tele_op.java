@@ -20,7 +20,7 @@ public class Tele_op extends LinearOpMode {
 
     // Gate Timer for shooting
     private double shooterStartTime = 0;
-    private final double GATE_OPEN_POS = .4;    // adjust
+    private final double GATE_OPEN_POS = .5;    // adjust
     private final double GATE_CLOSED_POS = 0.1;  // adjust
     // Drive motors
     private DcMotor fl, bl, fr, br;
@@ -179,8 +179,8 @@ public class Tele_op extends LinearOpMode {
             // D-pad DOWN → stop & close gate (toggle OFF)
 // Shooter ON
             if (gamepad1.dpad_up) {
-                leftShootMotor.setPower(0.8);
-                rightShootMotor.setPower(-0.8);
+                leftShootMotor.setPower(0.7);
+                rightShootMotor.setPower(-0.7);
                 gateServo.setPosition(GATE_OPEN_POS);
             }
 
