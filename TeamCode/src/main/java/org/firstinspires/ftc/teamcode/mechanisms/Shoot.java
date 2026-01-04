@@ -30,8 +30,8 @@ public class Shoot {
     public class ShootToScore implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            leftShootMotor.setPower(0.8);
-            rightShootMotor.setPower(-0.8); // likely correct for mirrored motors
+            leftShootMotor.setPower(0.6);
+            rightShootMotor.setPower(-0.6); // likely correct for mirrored motors
             gateServo.setPosition(GATE_OPEN_POS);
             return false;
         }

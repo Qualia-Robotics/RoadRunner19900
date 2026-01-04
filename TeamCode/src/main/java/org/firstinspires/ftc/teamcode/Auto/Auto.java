@@ -27,39 +27,96 @@ public class Auto extends LinearOpMode {
         // instantiate your MecanumDrive at a particular pose.
         waitForStart();
         Pose2d initialPose = new Pose2d(40.66, -56.77, Math.toRadians(0));
-        //Pose2d shootPose = new Pose2d(17, -9.3, Math.toRadians(-45));
+        Pose2d currentPose = new Pose2d(0, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         Shoot Shoot = new Shoot(hardwareMap);
         Intake Intake = new Intake(hardwareMap);
-        TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                //lineToYSplineHeading(-9.3, Math.toRadians(-45))
-                //.waitSeconds(2)
-                //.setTangent(Math.toRadians(90))
-                //.lineToX(17)
-                //.lineToY(-9.3)
-                //.setTangent(Math.toRadians(0))
-                //.turnTo(-45);
-                //.setTangent(0)
+        TrajectoryActionBuilder ShootPos = drive.actionBuilder(initialPose)
+
                 //.splineToSplineHeading(new Pose2d(17, -9.3, Math.toRadians(-45)), Math.toRadians(-300));
                 .strafeToLinearHeading(new Vector2d(17, -9.3), Math.toRadians(-45));
-                //.waitSeconds(1);
+                currentPose = new Pose2d(17, -9.3, Math.toRadians(-45));
 
-                //.setTangent(0)
-                //.splineToSplineHeading(new Pose2d(20.7,-22.5,-90), Math.PI/2);
-                //.strafeToHea(new Vector2d(17, -9.3))//score position/angle
-                //.turn(Math.toRadians(-45))
-                //shoot here
-                //.lineToY(-50);
+        //.waitSeconds(1);
+        TrajectoryActionBuilder tab2 = drive.actionBuilder(currentPose)
+            .strafeToLinearHeading(new Vector2d(21.4, -28), Math.toRadians(-90));
+        currentPose = new Pose2d(21.4, -28, Math.toRadians(-90));
+
+        TrajectoryActionBuilder tab3 = drive.actionBuilder(currentPose)
+                .strafeToLinearHeading(new Vector2d(21.4, -48), Math.toRadians(-90));
+        currentPose = new Pose2d(21.4, -48, Math.toRadians(-90));
+
+        TrajectoryActionBuilder tab41 = drive.actionBuilder(currentPose)
+                .lineToXLinearHeading(-2.4, Math.PI);
+        currentPose = new Pose2d(-2.4, -9.3, Math.toRadians(-90));
+
+        TrajectoryActionBuilder tab4 = drive.actionBuilder(currentPose)
+                .strafeToSplineHeading(new Vector2d(-2.6, -28), Math.toRadians(-90));
+        currentPose = new Pose2d(-2.6, -28, Math.toRadians(-90));
+
+        TrajectoryActionBuilder tab5 = drive.actionBuilder(currentPose)
+                .strafeToLinearHeading(new Vector2d(-2.6, -48), Math.toRadians(-90));
+        currentPose = new Pose2d(-2.6, -48, Math.toRadians(-90));
 
 
         Actions.runBlocking(
                 new ParallelAction(
                 new SequentialAction(
-                        tab1.build(),
+                        ShootPos.build(),
                         Shoot.shootScore(),
+                        new SleepAction(2),
                         Intake.Intaking(),
-                        new SleepAction(500),
-                        Intake.stopIntake()
+                        new SleepAction(.2),
+                        Intake.stopIntake(),
+                        new SleepAction(.3),
+                        Intake.Intaking(),
+                        new SleepAction(.2),
+                        Intake.stopIntake(),
+                        new SleepAction(.3),
+                        Intake.Intaking(),
+                        new SleepAction(.2),
+                        Intake.stopIntake(),
+                        Shoot.stopShooting(),
+                        tab2.build(),
+                        Intake.Intaking(),
+                        tab3.build(),
+                        Intake.stopIntake(),
+                        ShootPos.build(),
+                        Shoot.shootScore(),
+                        new SleepAction(2),
+                        Intake.Intaking(),
+                        new SleepAction(.2),
+                        Intake.stopIntake(),
+                        new SleepAction(.3),
+                        Intake.Intaking(),
+                        new SleepAction(.2),
+                        Intake.stopIntake(),
+                        new SleepAction(.3),
+                        Intake.Intaking(),
+                        new SleepAction(.5),
+                        Intake.stopIntake(),
+                        Shoot.stopShooting(),
+                        tab41.build(),
+                        tab4.build(),
+                        Intake.Intaking(),
+                        tab5.build(),
+                        Intake.stopIntake(),
+                        ShootPos.build(),
+                        Shoot.shootScore(),
+                        new SleepAction(2),
+                        Intake.Intaking(),
+                        new SleepAction(.2),
+                        Intake.stopIntake(),
+                        new SleepAction(.3),
+                        Intake.Intaking(),
+                        new SleepAction(.2),
+                        Intake.stopIntake(),
+                        new SleepAction(.3),
+                        Intake.Intaking(),
+                        new SleepAction(.5),
+                        Intake.stopIntake(),
+                        Shoot.stopShooting()
+
                 ))
         );
     }

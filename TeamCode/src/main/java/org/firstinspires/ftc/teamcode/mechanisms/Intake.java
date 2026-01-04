@@ -18,8 +18,8 @@ public class Intake {
 
     // ✅ Constructor
     public Intake(HardwareMap hardwareMap) {
-        rightintake = hardwareMap.get(DcMotorEx.class, "rightintake");
-        leftintake = hardwareMap.get(DcMotorEx.class, "leftintake");
+        rightintake = hardwareMap.get(DcMotorEx.class, "rightIntake");
+        leftintake = hardwareMap.get(DcMotorEx.class, "leftIntake");
         kickerServo = hardwareMap.get(CRServo.class, "kickerServo");
     }
 
@@ -31,8 +31,8 @@ public class Intake {
     public class IntakingAction implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            leftintake.setPower(0.8);
-            rightintake.setPower(-0.8); // likely correct for mirrored motors
+            leftintake.setPower(-0.6);
+            rightintake.setPower(0.6); // likely correct for mirrored motors
             kickerServo.setPower(1.0);
             return false;
         }
