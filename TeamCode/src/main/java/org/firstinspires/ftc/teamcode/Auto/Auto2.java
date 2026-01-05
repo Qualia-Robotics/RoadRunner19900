@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Shoot;
 
 
 @Config
-@Autonomous(name = "Auto", group = "Autonomous")
+@Autonomous(name = "Auto2", group = "Autonomous")
 public class Auto2 extends LinearOpMode {
     @Override
     public void runOpMode() {
