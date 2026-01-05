@@ -40,23 +40,17 @@ public class Auto extends LinearOpMode {
 
         //.waitSeconds(1);
         TrajectoryActionBuilder collectrow1 = drive.actionBuilder(currentPose)
-                .setTangent(-45)
             .strafeToLinearHeading(new Vector2d(21.4, -24), Math.toRadians(-90));
         currentPose = new Pose2d(21.4, -24, Math.toRadians(-90));
-        //shootPos
+
         TrajectoryActionBuilder finishrow1 = drive.actionBuilder(currentPose)
                 .strafeToLinearHeading(new Vector2d(21.4, -48), Math.toRadians(-90));
         currentPose = new Pose2d(21.4, -48, Math.toRadians(-90));
-        //shootPos
-       /* TrajectoryActionBuilder lineuprow2 = drive.actionBuilder(currentPose)
-                .setTangent(180)
-                .strafeToSplineHeading(new Vector2d(-2.6, -9.3), Math.toRadians(-90));
-        currentPose = new Pose2d(-2.6, -9.3, Math.toRadians(-90));*/
-        //shootPos
+
         TrajectoryActionBuilder collectrow2 = drive.actionBuilder(currentPose)
                 .setTangent(-45)
-                .strafeToLinearHeading(new Vector2d(-1, -24), Math.toRadians(-90));
-        currentPose = new Pose2d(-1, -24, Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-2.6, -24), Math.toRadians(-90));
+        currentPose = new Pose2d(-2.6, -24, Math.toRadians(-90));
 
         TrajectoryActionBuilder finishrow2 = drive.actionBuilder(currentPose)
                 .strafeToLinearHeading(new Vector2d(-2.6, -48), Math.toRadians(-90));
@@ -83,21 +77,6 @@ public class Auto extends LinearOpMode {
                                 .build(),
                         Shoot.shootScore(), new SleepAction(1.5), Intake.Intaking(), new SleepAction(.2), Intake.stopIntake(), new SleepAction(.3), Intake.Intaking(), new SleepAction(.2), Intake.stopIntake(), new SleepAction(.3), Intake.Intaking(), new SleepAction(.5), Intake.stopIntake(),
                         Shoot.stopShooting(),
-                        drive.actionBuilder(currentPose)
-                                .strafeToLinearHeading(
-                                        new Vector2d(30, -9.3),
-                                        Math.toRadians(-45)
-                                )
-                                .build()
-
-
-
-
-                        //lineuprow2.build(),
-                       /* drive.actionBuilder(currentPose)
-                                .turnTo(-180
-                                )
-                                .build()
                         collectrow2.build(),
                         Intake.Intaking(),
                         finishrow2.build(),
@@ -111,7 +90,7 @@ public class Auto extends LinearOpMode {
                                 )
                                 .build(),
                         Shoot.shootScore(), new SleepAction(2), Intake.Intaking(), new SleepAction(.2), Intake.stopIntake(), new SleepAction(.3), Intake.Intaking(), new SleepAction(.2), Intake.stopIntake(), new SleepAction(.3), Intake.Intaking(), new SleepAction(.5), Intake.stopIntake(),
-                        Shoot.stopShooting()*/
+                        Shoot.stopShooting()
 
                 ))
         );
