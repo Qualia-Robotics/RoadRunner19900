@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 public class Shoot {
 
     private DcMotorEx leftShootMotor, rightShootMotor;
@@ -16,11 +19,13 @@ public class Shoot {
     private static final double GATE_OPEN_POS = 0.5;
     private static final double GATE_CLOSED_POS = 0.1;
 
+
     // ✅ Constructor
     public Shoot(HardwareMap hardwareMap) {
         leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
         rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
         gateServo = hardwareMap.get(Servo.class, "gateServo");
+
     }
 
     // ✅ Shoot action
@@ -30,10 +35,10 @@ public class Shoot {
     public class ShootToScore implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            leftShootMotor.setPower(0.6);
-            rightShootMotor.setPower(-0.6); // likely correct for mirrored motors
+            leftShootMotor.setPower(0.62);
+            rightShootMotor.setPower(-0.62); // likely correct for mirrored motors
             gateServo.setPosition(GATE_OPEN_POS);
-            return false;
+                return false;
         }
     }
 
