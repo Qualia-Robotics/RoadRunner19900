@@ -38,6 +38,20 @@ public class Intake {
         }
     }
 
+    public Action FastIntaking() {
+
+        return new IntakingAction();
+    }
+    public class FastIntakingAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            leftintake.setPower(-1);
+            rightintake.setPower(1); // likely correct for mirrored motors
+            kickerServo.setPower(1.0);
+            return false;
+        }
+    }
+
     // ✅ Stop shooting action
 
     public Action stopIntake() {
