@@ -45,6 +45,7 @@ public class PassThroughAuto extends LinearOpMode {
                                         shootPose.position,
                                         shootPose.heading
                                 )
+                                .turnTo(-45)
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
@@ -90,6 +91,7 @@ public class PassThroughAuto extends LinearOpMode {
                                         shootPose.position,
                                         shootPose.heading
                                 )
+                                .turnTo(-45)
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
@@ -134,6 +136,7 @@ public class PassThroughAuto extends LinearOpMode {
                                         shootPose.position,
                                         shootPose.heading
                                 )
+                                .turnTo(-45)
                                 .build(),
 
                         // Start shooting sequence
@@ -185,6 +188,7 @@ public class PassThroughAuto extends LinearOpMode {
                                         shootPose.position,
                                         shootPose.heading
                                 )
+                                .turnTo(-45)
                                 .build(),
 
                         // Start shooting sequence
