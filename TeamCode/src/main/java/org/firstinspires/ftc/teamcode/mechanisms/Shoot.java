@@ -16,8 +16,8 @@ public class Shoot {
     private DcMotorEx leftShootMotor, rightShootMotor;
     private Servo gateServo;
 
-    private static final double GATE_OPEN_POS = 0.5;
-    private static final double GATE_CLOSED_POS = 0.1;
+    private static final double GATE_OPEN_POS = -0.1;
+    private static final double GATE_CLOSED_POS = 0.5;
 
 
     // ✅ Constructor
