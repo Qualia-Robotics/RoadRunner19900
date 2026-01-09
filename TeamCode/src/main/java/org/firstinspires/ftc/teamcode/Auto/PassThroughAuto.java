@@ -22,13 +22,13 @@ public class PassThroughAuto extends LinearOpMode {
     public void runOpMode() {
         waitForStart();
         Pose2d startPose = new Pose2d(40.66, -56.77, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(17.0, -9.3, Math.toRadians(-45));
+        Pose2d shootPose = new Pose2d(27.0, -19.3, Math.toRadians(-45));
         Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
         Pose2d finishRow1 = new Pose2d(21.4, -47.0, Math.toRadians(-90));
         Pose2d collectRow2 = new Pose2d(-2.4, -5.0, Math.toRadians(-90));
-        Pose2d finishRow2 = new Pose2d(-2.4, -47.0, Math.toRadians(-90));
+        Pose2d finishRow2 = new Pose2d(-2.4, -50.0, Math.toRadians(-90));
         Pose2d collectRow3 = new Pose2d(-26,-20,Math.toRadians(-90));
-        Pose2d finishRow3 = new Pose2d(-26,-49, Math.toRadians(-90));
+        Pose2d finishRow3 = new Pose2d(-26,-50, Math.toRadians(-90));
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Shoot Shoot = new Shoot(hardwareMap);
@@ -42,6 +42,8 @@ public class PassThroughAuto extends LinearOpMode {
                 new SequentialAction(
 
                         // MOVE INTO SHOOT POSITION
+                        Shoot.shootScore(),
+
                         drive.actionBuilder(startPose)
                                 .setReversed(true)
                                 .strafeToSplineHeading(
@@ -51,22 +53,10 @@ public class PassThroughAuto extends LinearOpMode {
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
-                        Shoot.shootScore(),
-                        new SleepAction(1.75),
-
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
-                        new SleepAction(.3),
-
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
-                        new SleepAction(.3),
+                        new SleepAction(1),
 
                         Intake.FastIntaking(),
-                        new SleepAction(.2),
-
+                        new SleepAction(.8),
 
                         Shoot.stopShooting(),
 
@@ -74,10 +64,9 @@ public class PassThroughAuto extends LinearOpMode {
                         drive.actionBuilder(collectRow1)
                                 .strafeToLinearHeading(finishRow1.position, finishRow1.heading)
 
-                                .build(),
+                                .build()
 
                         // Step 4: Stop intake at finishRow1
-                        Intake.stopIntake()
                 )
         );
 
@@ -91,31 +80,23 @@ public class PassThroughAuto extends LinearOpMode {
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
+                        Intake.stopIntake(),
+                        new SleepAction(0.2),
                         Shoot.shootScore(),
-                        new SleepAction(1.75),
-
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
-                        new SleepAction(.3),
-
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
-                        new SleepAction(.3),
+                        new SleepAction(2.5),
 
                         Intake.FastIntaking(),
-                        new SleepAction(.2),
+                        new SleepAction(1.8),
 
                         Shoot.stopShooting(),
 
                         // MOVE TO COLLECT ROW 2
                         drive.actionBuilder(collectRow2)
                                 .strafeToLinearHeading(finishRow2.position, finishRow2.heading)
-                                .build(),
+                                .build()
 
                         // Step 4: Stop intake at finishRow2
-                        Intake.stopIntake()
+
                 )
         );
 
@@ -129,22 +110,13 @@ public class PassThroughAuto extends LinearOpMode {
                                 .build(),
 
                         // Start shooting sequence
+                        Intake.stopIntake(),
+                        new SleepAction(0.2),
                         Shoot.shootScore(),
-                        new SleepAction(1.75),
-
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
-                        new SleepAction(.3),
-
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
-                        new SleepAction(.3),
+                        new SleepAction(2.5),
 
                         Intake.FastIntaking(),
-                        new SleepAction(.2),
-
+                        new SleepAction(.8),
 
                         Shoot.stopShooting(),
 
@@ -161,10 +133,7 @@ public class PassThroughAuto extends LinearOpMode {
                                         finishRow3.position,
                                         finishRow3.heading
                                 )
-                                .build(),
-
-                        // Step 4: Stop intake at finishRow2
-                        Intake.stopIntake()
+                                .build()
                 )
         );
 
@@ -177,22 +146,13 @@ public class PassThroughAuto extends LinearOpMode {
                                 .build(),
 
                         // Start shooting sequence
+                        Intake.stopIntake(),
+                        new SleepAction(0.2),
                         Shoot.shootScore(),
-                        new SleepAction(1.75),
+                        new SleepAction(2.5),
 
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
-                        new SleepAction(.3),
-
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
-                        new SleepAction(.3),
-
-                        Intake.Intaking(),
-                        new SleepAction(.2),
-                        Intake.stopIntake(),
+                        Intake.FastIntaking(),
+                        new SleepAction(.8),
 
                         Shoot.stopShooting()
                 )
