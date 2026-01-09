@@ -34,6 +34,9 @@ public class PassThroughAuto extends LinearOpMode {
         Shoot Shoot = new Shoot(hardwareMap);
         Intake Intake = new Intake(hardwareMap);
 
+        double strafeScale = 0.5; // 50% speed for strafes
+
+
         // Shoot --- Start
         Actions.runBlocking(
                 new SequentialAction(
@@ -45,7 +48,6 @@ public class PassThroughAuto extends LinearOpMode {
                                         shootPose.position,
                                         shootPose.heading
                                 )
-                                .turnTo(-45)
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
@@ -70,10 +72,8 @@ public class PassThroughAuto extends LinearOpMode {
 
                         // MOVE TO COLLECT ROW 1
                         drive.actionBuilder(collectRow1)
-                                .strafeToLinearHeading(
-                                        finishRow1.position,
-                                        finishRow1.heading
-                                )
+                                .strafeToLinearHeading(finishRow1.position, finishRow1.heading)
+
                                 .build(),
 
                         // Step 4: Stop intake at finishRow1
@@ -87,11 +87,7 @@ public class PassThroughAuto extends LinearOpMode {
                         // MOVE INTO SHOOT POSITION
                         drive.actionBuilder(finishRow1)
                                 .setReversed(true)
-                                .strafeToSplineHeading(
-                                        shootPose.position,
-                                        shootPose.heading
-                                )
-                                .turnTo(-45)
+                                .strafeToSplineHeading(shootPose.position, shootPose.heading)
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
@@ -115,10 +111,7 @@ public class PassThroughAuto extends LinearOpMode {
 
                         // MOVE TO COLLECT ROW 2
                         drive.actionBuilder(collectRow2)
-                                .strafeToLinearHeading(
-                                        finishRow2.position,
-                                        finishRow2.heading
-                                )
+                                .strafeToLinearHeading(finishRow2.position, finishRow2.heading)
                                 .build(),
 
                         // Step 4: Stop intake at finishRow2
@@ -132,11 +125,7 @@ public class PassThroughAuto extends LinearOpMode {
                         // Move to shootPose
                         drive.actionBuilder(finishRow2)
                                 .setReversed(true)
-                                .strafeToSplineHeading(
-                                        shootPose.position,
-                                        shootPose.heading
-                                )
-                                .turnTo(-45)
+                                .strafeToSplineHeading(shootPose.position, shootPose.heading)
                                 .build(),
 
                         // Start shooting sequence
@@ -184,11 +173,7 @@ public class PassThroughAuto extends LinearOpMode {
                         // Move to shootPose
                         drive.actionBuilder(finishRow3)
                                 .setReversed(true)
-                                .strafeToSplineHeading(
-                                        shootPose.position,
-                                        shootPose.heading
-                                )
-                                .turnTo(-45)
+                                .strafeToSplineHeading(shootPose.position, shootPose.heading)
                                 .build(),
 
                         // Start shooting sequence

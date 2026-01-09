@@ -161,8 +161,8 @@ public class Tele_op extends LinearOpMode {
             switch (shootState) {
 
                 case SPINUP:
-                    leftShootMotor.setPower(0.67);
-                    rightShootMotor.setPower(-0.67);
+                    leftShootMotor.setPower(0.69);
+                    rightShootMotor.setPower(-0.69);
                     gateServo.setPosition(GATE_OPEN_POS);
 
                     if (shootTimer.seconds() > 1.75) {
@@ -174,11 +174,11 @@ public class Tele_op extends LinearOpMode {
                 case SHOT_1:
                 case SHOT_2:
                 case SHOT_3:
-                    kickerServo.setPower(1);
-                    leftIntake.setPower(1);
+                    kickerServo.setPower(.9);
+                    leftIntake.setPower(.9);
                     rightIntake.setPower(1);
 
-                    if (shootTimer.seconds() > 0.15) {
+                    if (shootTimer.seconds() > 0.25) {
                         kickerServo.setPower(0);
                         leftIntake.setPower(0);
                         rightIntake.setPower(0);
@@ -191,7 +191,7 @@ public class Tele_op extends LinearOpMode {
 
                 case PAUSE_1:
                 case PAUSE_2:
-                    if (shootTimer.seconds() > 0.15) {
+                    if (shootTimer.seconds() > 0.25) {
                         shootState = (shootState == ShootState.PAUSE_1) ? ShootState.SHOT_2 : ShootState.SHOT_3;
                         shootTimer.reset();
                     }
