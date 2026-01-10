@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -17,19 +16,19 @@ import org.firstinspires.ftc.teamcode.mechanisms.Shoot;
 
 
 @Config
-@Autonomous(name = "PassThroughAuto", group = "Autonomous")
-public class PassThroughAuto extends LinearOpMode {
+@Autonomous(name = "BlueAuto", group = "Autonomous")
+public class BlueAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
-        Pose2d startPose = new Pose2d(40.66, -56.77, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(27.0, -19.3, Math.toRadians(-45));
-        Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
-        Pose2d finishRow1 = new Pose2d(21.4, -47.0, Math.toRadians(-90));
-        Pose2d collectRow2 = new Pose2d(-2.4, -5.0, Math.toRadians(-90));
-        Pose2d finishRow2 = new Pose2d(-2.4, -50.0, Math.toRadians(-90));
-        Pose2d collectRow3 = new Pose2d(-26,-20,Math.toRadians(-90));
-        Pose2d finishRow3 = new Pose2d(-26,-50, Math.toRadians(-90));
+        Pose2d startPose = new Pose2d(40.66, 56.77, Math.toRadians(0));
+        Pose2d shootPose = new Pose2d(27.0, 19.3, Math.toRadians(45));
+        Pose2d collectRow1 = new Pose2d(21.4, 10.0, Math.toRadians(90));
+        Pose2d finishRow1 = new Pose2d(21.4, 47.0, Math.toRadians(90));
+        Pose2d collectRow2 = new Pose2d(-2.4, 5.0, Math.toRadians(90));
+        Pose2d finishRow2 = new Pose2d(-2.4, 50.0, Math.toRadians(90));
+        Pose2d collectRow3 = new Pose2d(-26,20,Math.toRadians(90));
+        Pose2d finishRow3 = new Pose2d(-26,50, Math.toRadians(90));
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Shoot Shoot = new Shoot(hardwareMap);
