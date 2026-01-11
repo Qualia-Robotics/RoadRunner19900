@@ -164,18 +164,18 @@ public class Teleop extends LinearOpMode {
 
                 case SPINUP:
                     // Spin up flywheels
-                    leftShootMotor.setPower(0.69);
-                    rightShootMotor.setPower(-0.69);
+                    leftShootMotor.setPower(0.71);
+                    rightShootMotor.setPower(-0.71);
 
                     // FIRST 0.10s: gently pull balls down
                     if (shootTimer.seconds() < 0.20) {
                         leftIntake.setPower(-0.20);
                         rightIntake.setPower(-0.20);
-                        kickerServo.setPower(-0.2);
+                        kickerServo.setPower(-2);
                     } else {
                         leftIntake.setPower(0);
                         rightIntake.setPower(0);
-                        kickerServo.setPower(0);
+                        kickerServo.setPower(-0.7);
                     }
                     // Open gates
                     gateServo.setPosition(GATE_OPEN_POS);

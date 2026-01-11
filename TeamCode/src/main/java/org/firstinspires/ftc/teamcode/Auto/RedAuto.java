@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -17,8 +16,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.Shoot;
 
 
 @Config
-@Autonomous(name = "PassThroughAuto", group = "Autonomous")
-public class PassThroughAuto extends LinearOpMode {
+@Autonomous(name = "RedAuto", group = "Autonomous")
+public class RedAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
@@ -30,6 +29,8 @@ public class PassThroughAuto extends LinearOpMode {
         Pose2d finishRow2 = new Pose2d(-2.4, -50.0, Math.toRadians(-90));
         Pose2d collectRow3 = new Pose2d(-26,-20,Math.toRadians(-90));
         Pose2d finishRow3 = new Pose2d(-26,-50, Math.toRadians(-90));
+        Pose2d leavePos = new Pose2d(10, -25, Math.toRadians(-90));
+
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Shoot Shoot = new Shoot(hardwareMap);
@@ -57,9 +58,9 @@ public class PassThroughAuto extends LinearOpMode {
                         new SleepAction(1),
 
                         Intake.FastIntaking(),
-                        new SleepAction(.8),
+                        new SleepAction(.6),
 
-                        Shoot.stopShooting(),
+                        Shoot.shootIdle(),
 
                         // MOVE TO COLLECT ROW 1
                         drive.actionBuilder(collectRow1)
@@ -84,12 +85,12 @@ public class PassThroughAuto extends LinearOpMode {
                         Intake.stopIntake(),
                         new SleepAction(0.2),
                         Shoot.shootScore(),
-                        new SleepAction(2.5),
+                        new SleepAction(1.2),
 
                         Intake.FastIntaking(),
                         new SleepAction(1.8),
 
-                        Shoot.stopShooting(),
+                        Shoot.shootIdle(),
 
                         // MOVE TO COLLECT ROW 2
                         drive.actionBuilder(collectRow2)
@@ -114,12 +115,12 @@ public class PassThroughAuto extends LinearOpMode {
                         Intake.stopIntake(),
                         new SleepAction(0.2),
                         Shoot.shootScore(),
-                        new SleepAction(2.5),
+                        new SleepAction(1.2),
 
                         Intake.FastIntaking(),
                         new SleepAction(.8),
 
-                        Shoot.stopShooting(),
+                        Shoot.shootIdle(),
 
                         // MOVE TO COLLECT ROW 3
                         drive.actionBuilder(shootPose)
@@ -150,13 +151,22 @@ public class PassThroughAuto extends LinearOpMode {
                         Intake.stopIntake(),
                         new SleepAction(0.2),
                         Shoot.shootScore(),
-                        new SleepAction(2.5),
+                        new SleepAction(1.2),
 
                         Intake.FastIntaking(),
                         new SleepAction(.8),
 
                         Shoot.stopShooting()
                 )
+        );
+        Actions.runBlocking(
+        new SequentialAction(
+                // Move to shootPose
+                drive.actionBuilder(shootPose)
+                        .setReversed(true)
+                        .strafeToSplineHeading(leavePos.position, leavePos.heading)
+                        .build()
+        )
         );
 
     }
