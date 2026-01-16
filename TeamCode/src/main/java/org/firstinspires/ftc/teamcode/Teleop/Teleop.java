@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,12 +24,15 @@ public class Teleop extends LinearOpMode {
     private final double GATE_CLOSED_POS = 0.5;
     private final double LEFT_GATE_CLOSED_POS = 0;
     private final double LEFT_GATE_OPEN_POS = 0.5;
+    private final double FLYWHEEL_TPS = 2600; // ticks/sec, target flywheel velocity
 
     // Drive motors
     private DcMotor fl, bl, fr, br;
 
     // Intake & shooter
-    private DcMotor leftIntake, rightIntake, leftShootMotor, rightShootMotor;
+    private DcMotor leftIntake, rightIntake, rightShootMotor;
+
+    private DcMotorEx leftShootMotor;
 
     // Servos
     private CRServo kickerServo;
@@ -68,8 +72,28 @@ public class Teleop extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "rightFront");
         br = hardwareMap.get(DcMotor.class, "rightBack");
 
-        leftShootMotor = hardwareMap.get(DcMotor.class, "leftShootMotor");
-        rightShootMotor = hardwareMap.get(DcMotor.class, "rightShootMotor");
+        leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
+        leftShootMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftShootMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+
+        rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
+
+        rightShootMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // STARTING PIDF VALUES — tune later
+        PIDFCoefficients shooterPID = new PIDFCoefficients(
+                20.0,   // P
+                0.0,    // I
+                2.0,    // D
+                12.0    // F
+        );
+
+        leftShootMotor.setPIDFCoefficients(
+                DcMotor.RunMode.RUN_USING_ENCODER,
+                shooterPID
+        );
+
+
 
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
@@ -80,6 +104,16 @@ public class Teleop extends LinearOpMode {
         leftGateServo = hardwareMap.get(Servo.class, "leftGateServo");
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+
+        double currentTPS = leftShootMotor.getVelocity();
+        boolean atSpeed = currentTPS >= FLYWHEEL_TPS * 0.97;
+        double ticksPerSecond = leftShootMotor.getVelocity();
+        double TICKS_PER_REV = 28.0;
+        double rpm = (ticksPerSecond / TICKS_PER_REV) * 60.0;
+
+        telemetry.addData("Shoot RPM", rpm);
+
+
 
         pinpoint.setOffsets(-84.0, 171.4, DistanceUnit.MM);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
@@ -112,6 +146,7 @@ public class Teleop extends LinearOpMode {
             double precisionFactor = gamepad1.a ? 0.3 : 1.0;
 
 
+
             forward = -gamepad1.left_stick_y * MAX_POWER * precisionFactor;
             strafe  =  gamepad1.left_stick_x * MAX_POWER * precisionFactor;
             turn    =  gamepad1.right_stick_x * MAX_POWER * precisionFactor;
@@ -127,13 +162,20 @@ public class Teleop extends LinearOpMode {
             double outtakePower = gamepad1.left_trigger * MAX_POWER;
             double finalPower = intakePower - outtakePower;
 
+
             leftIntake.setPower(finalPower);
             rightIntake.setPower(finalPower);
 
             /* -------- SHOOTER MANUAL -------- */
             if (gamepad1.dpad_up) {
-                leftShootMotor.setPower(0.70);
-                rightShootMotor.setPower(-0.70);
+                leftShootMotor.setPower(0.50);
+                rightShootMotor.setPower(-0.50);
+                gateServo.setPosition(GATE_OPEN_POS);
+                leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            }
+            if (gamepad1.dpad_left) {
+                leftShootMotor.setPower(0.40);
+                rightShootMotor.setPower(-0.40);
                 gateServo.setPosition(GATE_OPEN_POS);
                 leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
             }
@@ -163,15 +205,17 @@ public class Teleop extends LinearOpMode {
             switch (shootState) {
 
                 case SPINUP:
-                    // Spin up flywheels
-                    leftShootMotor.setPower(0.71);
-                    rightShootMotor.setPower(-0.71);
+
+                    // Spin up flywheels with PID
+                    leftShootMotor.setVelocity(FLYWHEEL_TPS);
+                    rightShootMotor.setPower(0.9); // follower slightly under full power
+
 
                     // FIRST 0.10s: gently pull balls down
                     if (shootTimer.seconds() < 0.20) {
                         leftIntake.setPower(-0.20);
                         rightIntake.setPower(-0.20);
-                        kickerServo.setPower(-2);
+                        kickerServo.setPower(-1);
                     } else {
                         leftIntake.setPower(0);
                         rightIntake.setPower(0);
@@ -189,10 +233,13 @@ public class Teleop extends LinearOpMode {
                     break;
 
                 case SHOOT:
-                    // Feed all balls at once
-                    kickerServo.setPower(1.0);
-                    leftIntake.setPower(1.0);
-                    rightIntake.setPower(1.0);
+
+                    if (shootTimer.seconds() > 0.2 && atSpeed) {
+                        // Feed balls
+                        leftIntake.setPower(1.0);
+                        rightIntake.setPower(1.0);
+                        kickerServo.setPower(1.0);
+                    }
 
                     if (shootTimer.seconds() > 1.0) {
                         shootState = ShootState.DONE;
