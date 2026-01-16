@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -14,6 +15,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
+
+
 import java.util.Locale;
 
 @TeleOp(name="Teleop", group="1) Main OpModes")
@@ -24,15 +29,12 @@ public class Teleop extends LinearOpMode {
     private final double GATE_CLOSED_POS = 0.5;
     private final double LEFT_GATE_CLOSED_POS = 0;
     private final double LEFT_GATE_OPEN_POS = 0.5;
-    private final double FLYWHEEL_TPS = 1400; // ticks/sec, target flywheel velocity
 
     // Drive motors
     private DcMotor fl, bl, fr, br;
 
     // Intake & shooter
-    private DcMotor leftIntake, rightIntake, rightShootMotor;
-
-    private DcMotorEx leftShootMotor;
+    private DcMotor leftIntake, rightIntake;
 
     // Servos
     private CRServo kickerServo;
@@ -40,11 +42,9 @@ public class Teleop extends LinearOpMode {
 
     // Constants
     private final double MAX_POWER = 0.8;
-    private final double COUNTS_PER_REV = 1024.0;
 
     // Drive variables
     private double forward, turn, strafe;
-    private double lastAngle = 0;
 
     GoBildaPinpointDriver pinpoint;
     double oldTime = 0;
@@ -72,29 +72,6 @@ public class Teleop extends LinearOpMode {
         fr = hardwareMap.get(DcMotor.class, "rightFront");
         br = hardwareMap.get(DcMotor.class, "rightBack");
 
-        leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
-        leftShootMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        leftShootMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-
-        rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
-
-        rightShootMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // STARTING PIDF VALUES — tune later
-        PIDFCoefficients shooterPID = new PIDFCoefficients(
-                20.0,   // P
-                0.0,    // I
-                2.0,    // D
-                12.0    // F
-        );
-
-        leftShootMotor.setPIDFCoefficients(
-                DcMotor.RunMode.RUN_USING_ENCODER,
-                shooterPID
-        );
-
-
-
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
 
@@ -105,13 +82,8 @@ public class Teleop extends LinearOpMode {
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        double ticksPerSecond = leftShootMotor.getVelocity();
-        double TICKS_PER_REV = 28.0;
-        double rpm = (ticksPerSecond / TICKS_PER_REV) * 60.0;
-
-        telemetry.addData("Shoot RPM", rpm);
-
-
+        FlyPID flywheel = new FlyPID(hardwareMap);
+        Action flywheelAction = null;
 
         pinpoint.setOffsets(-84.0, 171.4, DistanceUnit.MM);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
@@ -127,8 +99,6 @@ public class Teleop extends LinearOpMode {
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
 
-        rightShootMotor.setDirection(DcMotorEx.Direction.REVERSE);
-
         leftIntake.setDirection(DcMotor.Direction.REVERSE);
         rightIntake.setDirection(DcMotor.Direction.FORWARD);
 
@@ -141,6 +111,8 @@ public class Teleop extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+
+            TelemetryPacket packet = new TelemetryPacket();
 
             /* -------- DRIVE -------- */
             double precisionFactor = gamepad1.a ? 0.3 : 1.0;
@@ -163,24 +135,20 @@ public class Teleop extends LinearOpMode {
             rightIntake.setPower(finalPower);
 
             /* -------- SHOOTER MANUAL -------- */
-            if (gamepad1.dpad_up) {
-                leftShootMotor.setPower(0.50);
-                rightShootMotor.setPower(0.50);
-                gateServo.setPosition(GATE_OPEN_POS);
-                leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
-            }
-            if (gamepad1.dpad_left) {
-                leftShootMotor.setPower(0.40);
-                rightShootMotor.setPower(0.40);
-                gateServo.setPosition(GATE_OPEN_POS);
-                leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
-            }
-
-            if (gamepad1.dpad_down || gamepad1.dpad_left) {
-                gateServo.setPosition(GATE_CLOSED_POS);
-                leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
-                leftShootMotor.setPower(0);
-                rightShootMotor.setPower(0);
+            if (shootState == ShootState.IDLE) {
+                if (gamepad1.dpad_up) {
+                    flywheel.manualPower(0.5);
+                    gateServo.setPosition(GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+                } else if (gamepad1.dpad_left) {
+                    flywheel.manualPower(0.40);
+                    gateServo.setPosition(GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+                } else if (gamepad1.dpad_down) {
+                    gateServo.setPosition(GATE_CLOSED_POS);
+                    leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
+                    flywheel.stop().run(packet);
+                }
             }
 
             if (gamepad1.x) {
@@ -201,9 +169,11 @@ public class Teleop extends LinearOpMode {
             switch (shootState) {
 
                 case SPINUP:
-                    // PID-controlled flywheel
-                    leftShootMotor.setVelocity(FLYWHEEL_TPS);
-                    rightShootMotor.setPower(0.9);  // follower
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUp();
+                    }
+                    flywheelAction.run(packet);
+
 
                     // gently pull balls down
                     if (shootTimer.seconds() < 0.2) {
@@ -221,8 +191,7 @@ public class Teleop extends LinearOpMode {
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
                     // advance once flywheel reaches speed
-                    double currentTPS = leftShootMotor.getVelocity();
-                    if (currentTPS >= FLYWHEEL_TPS*0.97 && shootTimer.seconds() > 0.2) {
+                    if (flywheel.atSpeed()) {
                         shootTimer.reset();
                         shootState = ShootState.SHOOT;
                     }
@@ -242,8 +211,8 @@ public class Teleop extends LinearOpMode {
                     break;
 
                 case DONE:
-                    leftShootMotor.setPower(0);
-                    rightShootMotor.setPower(0);
+                    flywheel.stop().run(packet);
+                    flywheelAction = null;
                     leftIntake.setPower(0);
                     rightIntake.setPower(0);
                     kickerServo.setPower(0);
@@ -263,13 +232,10 @@ public class Teleop extends LinearOpMode {
                             pos.getX(DistanceUnit.INCH),
                             pos.getY(DistanceUnit.INCH),
                             pos.getHeading(AngleUnit.DEGREES)));
-            telemetry.addData("Flywheel TPS", leftShootMotor.getVelocity());
-            telemetry.addData("Target TPS", FLYWHEEL_TPS);
-            telemetry.addData("At speed?", leftShootMotor.getVelocity() >= FLYWHEEL_TPS*0.97);
+            telemetry.addData("Flywheel TPS", flywheel.getVelocity());
+            telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("Status", pinpoint.getDeviceStatus());
             telemetry.update();
-
-            sleep(20);
         }
     }
 }

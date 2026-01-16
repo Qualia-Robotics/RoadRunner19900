@@ -1,102 +1,76 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
-
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.mechanisms.Intake;
+
 public class FlyPID {
 
-    private DcMotorEx leftShootMotor, rightShootMotor;
+    private final DcMotorEx leftShootMotor;
+    private final DcMotorEx rightShootMotor;
 
-    private static final double GATE_OPEN_POS = -0.1;
-    private static final double GATE_CLOSED_POS = 0.5;
+    public static final double TARGET_VELOCITY = 1400;
 
-    private final double LEFT_GATE_CLOSED_POS = 0;
-    private final double LEFT_GATE_OPEN_POS = 0.5;
-    double TARGET_VELOCITY = 2600; // ticks/sec
-
-
-    // ✅ Constructor
-    public class FlyWare {
-
-        private DcMotorEx leftShootMotor;
-        private DcMotorEx rightShootMotor;
-
-        public FlyWare(HardwareMap hardwareMap) {
-            leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
-            leftShootMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            leftShootMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-            rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
-            rightShootMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            // STARTING PIDF VALUES — tune later
-            PIDFCoefficients shooterPID = new PIDFCoefficients(20.0, 0.0, 2.0, 12.0);
-            leftShootMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, shooterPID);
-        }
-
-        // ✅ Shoot action
-        public Action FlyRunUpPID() {
-            return new FlyRunUpPID();
-        }
-
-        public class FlyRunUpPID implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                double TARGET_VELOCITY = 2600; // ticks/sec
-
-                leftShootMotor.setVelocity(TARGET_VELOCITY);
-                rightShootMotor.setPower(0.9); // follower motor slightly under 100%
-
-                // Telemetry
-                double velocity = leftShootMotor.getVelocity();
-                double rpm = (velocity / 28.0) * 60.0;
-                packet.put("Flywheel TPS", velocity);
-                packet.put("Flywheel RPM", rpm);
-                packet.put("At Speed", velocity > TARGET_VELOCITY * 0.97);
-
-                return false; // keep running until you stop manually
-            }
-        }
+    public void manualPower(double power) {
+        leftShootMotor.setPower(power);
+        rightShootMotor.setPower(power);
     }
 
-
-    public Action FlyRunAct() {
-        return new FlyRun();
+    public double getVelocity() {
+        return leftShootMotor.getVelocity();
     }
-    public class FlyRun implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
+
+    public FlyPID(HardwareMap hardwareMap) {
+        leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
+        rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
+
+
+        leftShootMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftShootMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightShootMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShootMotor.setDirection(DcMotorEx.Direction.REVERSE);
+
+        //p Adjusts how fast we get to speed
+        //i
+        //d Limits change in velocity
+        //f provides an anticipatory, open-loop control input that helps motors quickly reach a target speed or position by directly countering known forces like gravity or friction, reducing reliance on the feedback loop to correct errors and making the system more responsive and stable, especially for velocity control
+        PIDFCoefficients shooterPID = new PIDFCoefficients(
+                20.0,
+                0.0,
+                2.0,
+                12.0);
+        leftShootMotor.setPIDFCoefficients(
+                DcMotor.RunMode.RUN_USING_ENCODER,
+                shooterPID
+        );
+    }
+
+    /** Call every loop while active */
+    public Action spinUp() {
+        return packet -> {
+            leftShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftShootMotor.setVelocity(TARGET_VELOCITY);
-            rightShootMotor.setPower(1.0); // follow motor
-            return false;
-        }
+            rightShootMotor.setVelocity(TARGET_VELOCITY);
+
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= TARGET_VELOCITY * 0.97);
+
+            return false; // keep running
+        };
     }
 
-    // ✅ Stop shooting action
-
-    public Action FlyOffAct() {
-        return new FlyOff();
+    public Action stop() {
+        return packet -> {
+            leftShootMotor.setPower(0);
+            rightShootMotor.setPower(0);
+            return true; // finishes immediately
+        };
     }
-    public class FlyOff implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            leftShootMotor.setVelocity(TARGET_VELOCITY);
-            rightShootMotor.setPower(1.0); // follow motor
-            return false;
-        }
 
+    public boolean atSpeed() {
+        return leftShootMotor.getVelocity() >= TARGET_VELOCITY * 0.97;
     }
 }
