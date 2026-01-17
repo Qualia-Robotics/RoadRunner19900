@@ -16,7 +16,7 @@ public class PIDF_Tuner extends OpMode {
     public double curTarVel = highVelocity;
     public double F=0;
     public double P=0;
-    double[] stepSizes = {10, 1, 0.1, 0.001, 0.0001};
+    double[] stepSizes = {10, 5 , 1, 0.5, 0.1, 0.05, 0.01 ,0.005, 0.001, 0.0005 , 0.0001};
 
     int stepIndex = 1;
 
@@ -67,7 +67,7 @@ public class PIDF_Tuner extends OpMode {
 
         //velocity
         leftShootMotor.setVelocity(curTarVel);
-        rightShootMotor.setVelocity(curTarVel);
+        rightShootMotor.setPower(leftShootMotor.getPower());
         double curVel= leftShootMotor.getVelocity();
         double error= curTarVel-curVel;
         telemetry.addData("Target Velocity", curTarVel);

@@ -11,7 +11,7 @@ public class FlyPID {
     private final DcMotorEx leftShootMotor;
     private final DcMotorEx rightShootMotor;
 
-    public static final double TARGET_VELOCITY = 1000;
+    public static final double TARGET_VELOCITY = 1150;
 
     public void manualPower(double power) {
         leftShootMotor.setPower(power);
@@ -37,10 +37,10 @@ public class FlyPID {
         //d Limits change in velocity
         //f provides an anticipatory, open-loop control input that helps motors quickly reach a target speed or position by directly countering known forces like gravity or friction, reducing reliance on the feedback loop to correct errors and making the system more responsive and stable, especially for velocity control
         PIDFCoefficients shooterPID = new PIDFCoefficients(
-                4.0,
+                55.0,
                 0.0,
                 0.0,
-                0.1);
+                15);
         leftShootMotor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
                 shooterPID
@@ -50,10 +50,8 @@ public class FlyPID {
     /** Call every loop while active */
     public Action spinUp() {
         return packet -> {
-            leftShootMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftShootMotor.setVelocity(TARGET_VELOCITY);
-            rightShootMotor.setVelocity(TARGET_VELOCITY);
-
+            rightShootMotor.setPower(1.0);
             double velocity = leftShootMotor.getVelocity();
             packet.put("Flywheel TPS", velocity);
             packet.put("At Speed", velocity >= TARGET_VELOCITY * 0.97);
