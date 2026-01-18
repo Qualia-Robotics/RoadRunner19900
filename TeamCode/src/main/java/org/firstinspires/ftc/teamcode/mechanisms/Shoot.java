@@ -19,7 +19,7 @@ public class Shoot {
 
     private CRServo kickerServo;
 
-    private static final double GATE_OPEN_POS = -0.1;
+    private static final double GATE_OPEN_POS = 0;
     private static final double GATE_CLOSED_POS = 0.5;
 
     private final double LEFT_GATE_CLOSED_POS = 0;
@@ -33,6 +33,8 @@ public class Shoot {
         gateServo = hardwareMap.get(Servo.class, "gateServo");
         leftGateServo = hardwareMap.get(Servo.class, "leftGateServo");
         kickerServo = hardwareMap.get(CRServo.class, "kickerServo");
+        rightShootMotor.setDirection(DcMotorEx.Direction.REVERSE);
+
 
 
     }
@@ -45,7 +47,7 @@ public class Shoot {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             leftShootMotor.setPower(0.64);
-            rightShootMotor.setPower(-0.64); // likely correct for mirrored motors
+            rightShootMotor.setPower(0.64); // likely correct for mirrored motors
             gateServo.setPosition(GATE_OPEN_POS);
             leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
                 return false;
@@ -59,7 +61,7 @@ public class Shoot {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             leftShootMotor.setPower(0.40);
-            rightShootMotor.setPower(-0.40); // likely correct for mirrored motors
+            rightShootMotor.setPower(0.40); // likely correct for mirrored motors
             kickerServo.setPower(-1);
             gateServo.setPosition(GATE_CLOSED_POS);
             leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
