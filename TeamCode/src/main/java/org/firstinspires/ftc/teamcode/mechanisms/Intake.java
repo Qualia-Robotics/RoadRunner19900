@@ -13,9 +13,6 @@ public class Intake {
     private DcMotorEx leftintake,rightintake;
     private CRServo kickerServo;
 
-    private static final double GATE_OPEN_POS = 0.4;
-    private static final double GATE_CLOSED_POS = 0.1;
-
     // ✅ Constructor
     public Intake(HardwareMap hardwareMap) {
         rightintake = hardwareMap.get(DcMotorEx.class, "rightIntake");
@@ -40,7 +37,7 @@ public class Intake {
 
     public Action FastIntaking() {
 
-        return new IntakingAction();
+        return new FastIntakingAction();
     }
     public class FastIntakingAction implements Action {
         @Override
