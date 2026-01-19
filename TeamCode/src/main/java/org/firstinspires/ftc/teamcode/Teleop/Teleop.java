@@ -205,7 +205,7 @@ public class Teleop extends LinearOpMode {
                         kickerServo.setPower(1.0);
                     }
 
-                    if (shootTimer.seconds() > 3.0) {
+                    if (shootTimer.seconds() > 1.0) {
                         shootState = ShootState.DONE;
                     }
                     break;
