@@ -45,10 +45,10 @@ public class FlyPID {
         //d Limits change in velocity
         //f provides an anticipatory, open-loop control input that helps motors quickly reach a target speed or position by directly countering known forces like gravity or friction, reducing reliance on the feedback loop to correct errors and making the system more responsive and stable, especially for velocity control
         PIDFCoefficients shooterPID = new PIDFCoefficients(
-                55.0,
+                90.0,
                 0.0,
                 0.0,
-                15);
+                12);
         leftShootMotor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
                 shooterPID
@@ -93,7 +93,7 @@ public class FlyPID {
             leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
             leftShootMotor.setPower(0);
             rightShootMotor.setPower(0);
-            return true; // finishes immediately
+            return false; // finishes immediately
         };
     }
     public boolean atIdleSpeed() {

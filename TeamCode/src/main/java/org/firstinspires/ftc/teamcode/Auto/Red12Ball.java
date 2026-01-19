@@ -11,13 +11,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
+import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
 
 @Config
-@Autonomous(name = "RedPIDAuto", group = "Autonomous")
-public class RedPIDAuto extends LinearOpMode {
+@Autonomous(name = "Red12Ball", group = "Autonomous")
+public class Red12Ball extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
@@ -26,7 +26,9 @@ public class RedPIDAuto extends LinearOpMode {
         Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
         Pose2d finishRow1 = new Pose2d(21.4, -45.0, Math.toRadians(-90));
         Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));
-        Pose2d finishRow2 = new Pose2d(-1.5, -50.0, Math.toRadians(-90));
+        Pose2d finishRow2 = new Pose2d(-1.5, -45.0, Math.toRadians(-90));
+        Pose2d openDaGate = new Pose2d(10, -60, Math.toRadians(-180));
+        //Pose2d lineDaGate = new Pose2d(10, -25, Math.toRadians(-90));
         Pose2d collectRow3 = new Pose2d(-24,-20,Math.toRadians(-90));
         Pose2d finishRow3 = new Pose2d(-24,-50, Math.toRadians(-90));
         Pose2d leavePos = new Pose2d(10, -25, Math.toRadians(-90));
@@ -63,18 +65,32 @@ public class RedPIDAuto extends LinearOpMode {
                         flywheel.idle(),
 
                         // MOVE TO COLLECT ROW 1
-                        drive.actionBuilder(collectRow1)
+                        drive.actionBuilder(shootPose)
                                 .strafeToLinearHeading(
-                                        finishRow1.position,
-                                        finishRow1.heading)
+                                        collectRow2.position,
+                                        collectRow2.heading)
+
+                                .build(),
+                        drive.actionBuilder(collectRow2)
+                                .strafeToLinearHeading(
+                                        finishRow2.position,
+                                        finishRow2.heading)
 
                                 .build(),
                         intake.stopIntake(),
+                        // OPEN DA GATE
+                        drive.actionBuilder(finishRow2)
+                                .setReversed(true)
+                                .strafeToSplineHeading(
+                                        openDaGate.position,
+                                        openDaGate.heading)
+                                .build(),
 
                         // MOVE INTO SHOOT POSITION
-                        drive.actionBuilder(finishRow1)
-                                .setReversed(true)
-                                .strafeToSplineHeading(shootPose.position, shootPose.heading)
+                        drive.actionBuilder(collectRow2)
+                                .strafeToSplineHeading(
+                                        shootPose.position,
+                                        shootPose.heading)
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
@@ -92,25 +108,22 @@ public class RedPIDAuto extends LinearOpMode {
 
                         flywheel.idle(),
 
-                        // MOVE TO COLLECT ROW 2
-                        drive.actionBuilder(shootPose)
+                        // MOVE TO COLLECT ROW 1
+                        drive.actionBuilder(collectRow1)
                                 .strafeToLinearHeading(
-                                        collectRow2.position,
-                                        collectRow2.heading)
-                                .build(),
-                        drive.actionBuilder(collectRow2)
-                                .strafeToLinearHeading(
-                                        finishRow2.position,
-                                        finishRow2.heading)
+                                        finishRow1.position,
+                                        finishRow1.heading)
                                 .build(),
                         intake.stopIntake(),
 
-                        // Step 4: Stop intake at finishRow2
+                        // Step 4: Stop intake at finishRow1
 
                         // Move to shootPose
-                        drive.actionBuilder(finishRow2)
+                        drive.actionBuilder(finishRow1)
                                 .setReversed(true)
-                                .strafeToSplineHeading(shootPose.position, shootPose.heading)
+                                .strafeToSplineHeading(
+                                        shootPose.position,
+                                        shootPose.heading)
                                 .build(),
 
                         // Start shooting sequence
@@ -147,7 +160,9 @@ public class RedPIDAuto extends LinearOpMode {
                         // Move to shootPose
                         drive.actionBuilder(finishRow3)
                                 .setReversed(true)
-                                .strafeToSplineHeading(shootPose.position, shootPose.heading)
+                                .strafeToSplineHeading(
+                                        shootPose.position,
+                                        shootPose.heading)
                                 .build(),
 
                         // Start shooting sequence
