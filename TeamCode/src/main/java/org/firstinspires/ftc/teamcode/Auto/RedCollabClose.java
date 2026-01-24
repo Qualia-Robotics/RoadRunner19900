@@ -21,16 +21,17 @@ public class RedCollabClose extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
-        Pose2d startPose = new Pose2d(40.66, -56.77, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(39.16, -56.77, Math.toRadians(0));
         Pose2d shootPose = new Pose2d(20.0, -12, Math.toRadians(-45));
         Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
         Pose2d finishRow1 = new Pose2d(21.4, -45.0, Math.toRadians(-90));
         Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));
         Pose2d finishRow2 = new Pose2d(-1.5, -45.0, Math.toRadians(-90));
         Pose2d openDaGate = new Pose2d(10, -58, Math.toRadians(-180));
+        Pose2d openDaGate2 = new Pose2d(6, -58, Math.toRadians(0));
         Pose2d alignRamp1 = new Pose2d(-1.5, -44, Math.toRadians(-70));
         Pose2d alignRamp2 = new Pose2d(-1.5, -57, Math.toRadians(-60));
-        Pose2d alignRamp3 = new Pose2d(-13, -55, Math.toRadians(-50));
+        Pose2d alignRamp3 = new Pose2d(-13, -56, Math.toRadians(-50));
         Pose2d leavePos = new Pose2d(10, -25, Math.toRadians(-90));
 
 
@@ -120,10 +121,17 @@ public class RedCollabClose extends LinearOpMode {
                                 .build(),
                         intake.stopIntake(),
 
+                        drive.actionBuilder(finishRow1)
+                                .setReversed(true)
+                                .strafeToSplineHeading(
+                                        openDaGate2.position,
+                                        openDaGate2.heading)
+                                .build(),
+
                         // Step 4: Stop intake at finishRow1
 
                         // Move to shootPose
-                        drive.actionBuilder(finishRow1)
+                        drive.actionBuilder(openDaGate2)
                                 .setReversed(true)
                                 .strafeToSplineHeading(
                                         shootPose.position,
@@ -157,7 +165,7 @@ public class RedCollabClose extends LinearOpMode {
                                         alignRamp3.heading)
                                 .build(),
                         intake.FastIntaking(),
-                        new SleepAction(.4),
+                        new SleepAction(1.2),
                         intake.stopIntake(),
                         drive.actionBuilder(collectRow2)
                                 .strafeToLinearHeading(

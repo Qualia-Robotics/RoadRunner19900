@@ -21,8 +21,8 @@ public class Red12Ball extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
-        Pose2d startPose = new Pose2d(40.66, -56.77, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(27.0, -19.3, Math.toRadians(-45));
+        Pose2d startPose = new Pose2d(39.16, -56.77, Math.toRadians(0));
+        Pose2d shootPose = new Pose2d(20.0, -12, Math.toRadians(-45));
         Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
         Pose2d finishRow1 = new Pose2d(21.4, -45.0, Math.toRadians(-90));
         Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));

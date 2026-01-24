@@ -25,10 +25,10 @@ import java.util.Locale;
 public class Teleop extends LinearOpMode {
 
     // Gate positions
-    private final double GATE_OPEN_POS = -0.1;
-    private final double GATE_CLOSED_POS = 0.5;
-    private final double LEFT_GATE_CLOSED_POS = 0;
-    private final double LEFT_GATE_OPEN_POS = 0.5;
+    private final double GATE_OPEN_POS = 0.1;
+    private final double GATE_CLOSED_POS = 0.7;
+    private final double LEFT_GATE_CLOSED_POS = 0.15;
+    private final double LEFT_GATE_OPEN_POS = 0.75;
 
     // Drive motors
     private DcMotor fl, bl, fr, br;
@@ -134,6 +134,7 @@ public class Teleop extends LinearOpMode {
             leftIntake.setPower(finalPower);
             rightIntake.setPower(finalPower);
 
+
             /* -------- SHOOTER MANUAL -------- */
             if (shootState == ShootState.IDLE) {
                 if (gamepad1.dpad_up) {
@@ -174,6 +175,70 @@ public class Teleop extends LinearOpMode {
                     }
                     flywheelAction.run(packet);
 
+
+                    // gently pull balls down
+                    if (shootTimer.seconds() < 0.2) {
+                        leftIntake.setPower(-0.2);
+                        rightIntake.setPower(-0.2);
+                        kickerServo.setPower(-0.7);
+                    } else {
+                        leftIntake.setPower(0);
+                        rightIntake.setPower(0);
+                        kickerServo.setPower(-0.7);
+                    }
+
+                    // open gates
+                    gateServo.setPosition(GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    // advance once flywheel reaches speed
+                    if (flywheel.atSpeed()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+
+                    break;
+
+                case SHOOT:
+                    if (shootTimer.seconds() > 0.1) { // small buffer
+                        leftIntake.setPower(1.0);
+                        rightIntake.setPower(1.0);
+                        kickerServo.setPower(1.0);
+                    }
+
+                    if (shootTimer.seconds() > 1.0) {
+                        shootState = ShootState.DONE;
+                    }
+                    break;
+
+                case DONE:
+                    flywheel.stop().run(packet);
+                    flywheelAction = null;
+                    leftIntake.setPower(0);
+                    rightIntake.setPower(0);
+                    kickerServo.setPower(0);
+                    gateServo.setPosition(GATE_CLOSED_POS);
+                    leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
+
+                    shootState = ShootState.IDLE;
+                    break;
+
+            }
+
+            boolean dpadUp = gamepad1.dpad_up;
+            if (dpadUp && !lastCircle && shootState == ShootState.IDLE) {
+                shootState = ShootState.SPINUP;
+                shootTimer.reset();
+            }
+            lastCircle = dpadUp; // keep the rising-edge logic the same
+
+            switch (shootState) {
+
+                case SPINUP:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUpFar();
+                    }
+                    flywheelAction.run(packet);
 
                     // gently pull balls down
                     if (shootTimer.seconds() < 0.2) {
