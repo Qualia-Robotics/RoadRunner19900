@@ -13,8 +13,10 @@ public class FlyPID {
     private final DcMotorEx rightShootMotor;
     private final Servo gateServo, leftGateServo;
 
-    public static final double TARGET_VELOCITY = 1150;
-    public static final double IDLE_VELOCITY = TARGET_VELOCITY / 2.0; // 575
+    public static final double TARGET_VELOCITY = 1100;
+    public static final double FAR_VELOCITY = 1800;
+
+    public static final double IDLE_VELOCITY = TARGET_VELOCITY / 1.1; // 575
     private static final double GATE_OPEN_POS = .1;
     private static final double GATE_CLOSED_POS = 0.7;
     private static final double LEFT_GATE_CLOSED_POS = .15;
@@ -74,11 +76,11 @@ public class FlyPID {
         return packet -> {
             gateServo.setPosition(GATE_OPEN_POS);
             leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
-            leftShootMotor.setVelocity(TARGET_VELOCITY);
+            leftShootMotor.setVelocity(FAR_VELOCITY);
             rightShootMotor.setPower(1.0);
             double velocity = leftShootMotor.getVelocity();
-            packet.put("Flywheel TPS", velocity);
-            packet.put("At Speed", velocity >= TARGET_VELOCITY * 0.97);
+            packet.put("Far Flywheel TPS", velocity);
+            packet.put("At Far Speed", velocity >= FAR_VELOCITY * 0.97);
 
             return false; // keep running
         };
@@ -115,5 +117,10 @@ public class FlyPID {
     public boolean atSpeed() {
         return leftShootMotor.getVelocity() >= TARGET_VELOCITY * 0.97;
     }
+
+    public boolean atFarSpeed() {
+        return leftShootMotor.getVelocity() >= FAR_VELOCITY * 0.97;
+    }
+
 }
 

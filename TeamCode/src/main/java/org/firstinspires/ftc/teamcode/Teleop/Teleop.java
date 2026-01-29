@@ -54,6 +54,7 @@ public class Teleop extends LinearOpMode {
     enum ShootState {
         IDLE,
         SPINUP,
+        SPINUPFAR,
         SHOOT,
         DONE
     }
@@ -227,14 +228,14 @@ public class Teleop extends LinearOpMode {
 
             boolean dpadUp = gamepad1.dpad_up;
             if (dpadUp && !lastCircle && shootState == ShootState.IDLE) {
-                shootState = ShootState.SPINUP;
+                shootState = ShootState.SPINUPFAR;
                 shootTimer.reset();
             }
             lastCircle = dpadUp; // keep the rising-edge logic the same
 
             switch (shootState) {
 
-                case SPINUP:
+                case SPINUPFAR:
                     if (flywheelAction == null) {
                         flywheelAction = flywheel.spinUpFar();
                     }
@@ -256,7 +257,7 @@ public class Teleop extends LinearOpMode {
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
                     // advance once flywheel reaches speed
-                    if (flywheel.atSpeed()) {
+                    if (flywheel.atFarSpeed()) {
                         shootTimer.reset();
                         shootState = ShootState.SHOOT;
                     }
@@ -299,7 +300,9 @@ public class Teleop extends LinearOpMode {
                             pos.getHeading(AngleUnit.DEGREES)));
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("At speed?", flywheel.atSpeed());
+            telemetry.addData("At Far speed?", flywheel.atFarSpeed());
             telemetry.addData("Status", pinpoint.getDeviceStatus());
+            telemetry.addData("Far Flywheel TPS", flywheel.getVelocity());
             telemetry.update();
         }
     }

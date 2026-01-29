@@ -22,7 +22,7 @@ public class RedCollabClose extends LinearOpMode {
     public void runOpMode() {
         waitForStart();
         Pose2d startPose = new Pose2d(39.16, -56.77, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(20.0, -12, Math.toRadians(-45));
+        Pose2d shootPose = new Pose2d(21.0, -13, Math.toRadians(-45));
         Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
         Pose2d finishRow1 = new Pose2d(21.4, -45.0, Math.toRadians(-90));
         Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));
@@ -165,7 +165,7 @@ public class RedCollabClose extends LinearOpMode {
                                         alignRamp3.heading)
                                 .build(),
                         intake.FastIntaking(),
-                        new SleepAction(1.2),
+                        new SleepAction(1.4),
                         intake.stopIntake(),
                         drive.actionBuilder(collectRow2)
                                 .strafeToLinearHeading(
