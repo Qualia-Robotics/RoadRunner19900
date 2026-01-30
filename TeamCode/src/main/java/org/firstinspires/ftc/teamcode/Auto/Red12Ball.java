@@ -10,6 +10,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+// drive and mechanism imports
+
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
@@ -29,7 +31,6 @@ public class Red12Ball extends LinearOpMode {
         Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));
         Pose2d finishRow2 = new Pose2d(-1.5, -45.0, Math.toRadians(-90));
         Pose2d openDaGate = new Pose2d(10, -60, Math.toRadians(-180));
-        //Pose2d lineDaGate = new Pose2d(10, -25, Math.toRadians(-90));
         Pose2d collectRow3 = new Pose2d(-24,-20,Math.toRadians(-90));
         Pose2d finishRow3 = new Pose2d(-24,-50, Math.toRadians(-90));
         Pose2d leavePos = new Pose2d(10, -25, Math.toRadians(-90));
@@ -37,9 +38,6 @@ public class Red12Ball extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         FlyPID flywheel = new FlyPID(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-
-        double strafeScale = 0.5; // 50% speed for strafes
-
 
         // Shoot --- Start
         Actions.runBlocking(

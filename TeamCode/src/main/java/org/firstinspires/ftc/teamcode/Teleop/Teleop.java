@@ -157,7 +157,7 @@ public class Teleop extends LinearOpMode {
                 kickerServo.setPower(0.0);
             }
 
-            /* -------- SHOOT MACRO (CIRCLE) -------- */
+            /* -------- CLOSE SHOOT MACRO (CIRCLE) -------- */
             boolean circle = gamepad1.circle;
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
                 shootState = ShootState.SPINUP;
@@ -173,7 +173,7 @@ public class Teleop extends LinearOpMode {
                     flywheelAction.run(packet);
 
 
-                    // gently pull balls down
+                    // gently pushes ball away from flywheel so no misfire
                     if (shootTimer.seconds() < 0.2) {
                         leftIntake.setPower(-0.2);
                         rightIntake.setPower(-0.2);
@@ -221,7 +221,7 @@ public class Teleop extends LinearOpMode {
                     break;
 
             }
-
+            //----------- FAR SHOOT MACRO (DPAD UP)-------------
             boolean dpadUp = gamepad1.dpad_up;
             if (dpadUp && !lastCircle && shootState == ShootState.IDLE) {
                 shootState = ShootState.SPINUPFAR;
@@ -237,7 +237,7 @@ public class Teleop extends LinearOpMode {
                     }
                     flywheelAction.run(packet);
 
-                    // gently pull balls down
+                    // gently push ball away from flywheel so no misfire
                     if (shootTimer.seconds() < 0.2) {
                         leftIntake.setPower(-0.2);
                         rightIntake.setPower(-0.2);
