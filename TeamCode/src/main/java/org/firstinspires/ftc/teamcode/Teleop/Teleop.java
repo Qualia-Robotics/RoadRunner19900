@@ -138,11 +138,7 @@ public class Teleop extends LinearOpMode {
 
             /* -------- SHOOTER MANUAL -------- */
             if (shootState == ShootState.IDLE) {
-                if (gamepad1.dpad_up) {
-                    flywheel.manualPower(0.5);
-                    gateServo.setPosition(GATE_OPEN_POS);
-                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
-                } else if (gamepad1.dpad_left) {
+                if (gamepad1.dpad_left) {
                     flywheel.manualPower(0.40);
                     gateServo.setPosition(GATE_OPEN_POS);
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);

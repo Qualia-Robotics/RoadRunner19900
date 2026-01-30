@@ -14,7 +14,7 @@ public class FlyPID {
     private final Servo gateServo, leftGateServo;
 
     public static final double TARGET_VELOCITY = 1100;
-    public static final double FAR_VELOCITY = 1800;
+    public static final double FAR_VELOCITY = 2100;
 
     public static final double IDLE_VELOCITY = TARGET_VELOCITY / 1.1; // 575
     private static final double GATE_OPEN_POS = .1;
