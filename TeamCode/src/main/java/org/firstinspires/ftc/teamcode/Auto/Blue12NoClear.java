@@ -16,22 +16,22 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
 
 @Config
-@Autonomous(name = "Red12NoClear", group = "Autonomous")
-public class Red12NoClear extends LinearOpMode {
+@Autonomous(name = "Blue12NoClear", group = "Autonomous")
+public class Blue12NoClear extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
-        Pose2d startPose = new Pose2d(39.16, -56.77, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(21.0, -13, Math.toRadians(-48));
-        Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
+        Pose2d startPose = new Pose2d(39.16, 56.77, Math.toRadians(0));
+        Pose2d shootPose = new Pose2d(19.0, 13, Math.toRadians(45));
         Pose2d shootPose2 = new Pose2d(20.0, -12, Math.toRadians(-45));
-        Pose2d finishRow1 = new Pose2d(21.4, -45.0, Math.toRadians(-90));
-        Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));
-        Pose2d finishRow2 = new Pose2d(-1.5, -45.0, Math.toRadians(-90));
-        Pose2d openDaGate = new Pose2d(10, -60, Math.toRadians(-180));
+        Pose2d collectRow1 = new Pose2d(10.4, 11.0, Math.toRadians(90));
+        Pose2d finishRow1 = new Pose2d(10.4, 41.0, Math.toRadians(90));
+        Pose2d collectRow2 = new Pose2d(-6.5, 6.0, Math.toRadians(90));
+        Pose2d finishRow2 = new Pose2d(-6.5, 40.0, Math.toRadians(90));
+        Pose2d openDaGate = new Pose2d(10, 60, Math.toRadians(180));
+        Pose2d collectRow3 = new Pose2d(-31,20,Math.toRadians(90));
+        Pose2d finishRow3 = new Pose2d(-31,42, Math.toRadians(90));
         //Pose2d lineDaGate = new Pose2d(10, -25, Math.toRadians(-90));
-        Pose2d collectRow3 = new Pose2d(-24, -20, Math.toRadians(-90));
-        Pose2d finishRow3 = new Pose2d(-24, -50, Math.toRadians(-90));
         Pose2d pushPos = new Pose2d(-58, -9.5, Math.toRadians(0));
         Pose2d pushPosEnd = new Pose2d(-40, -30, Math.toRadians(0));
 
