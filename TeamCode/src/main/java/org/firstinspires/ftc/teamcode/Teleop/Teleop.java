@@ -53,6 +53,7 @@ public class Teleop extends LinearOpMode {
 
     enum ShootState {
         IDLE,
+        PRE_PULL,
         SPINUP,
         SPINUPFAR,
         SHOOT,
@@ -160,29 +161,39 @@ public class Teleop extends LinearOpMode {
             /* -------- SHOOT MACRO (CIRCLE) -------- */
             boolean circle = gamepad1.circle;
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
-                shootState = ShootState.SPINUP;
+                shootState = ShootState.PRE_PULL;
                 shootTimer.reset();
             }
             lastCircle = circle;
+
             switch (shootState) {
+
+                case PRE_PULL:
+                    // reverse intake to settle balls
+                    leftIntake.setPower(-0.2);
+                    rightIntake.setPower(-0.2);
+                    kickerServo.setPower(-0.7);
+
+                    // keep gates closed
+                    gateServo.setPosition(GATE_CLOSED_POS);
+                    leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
+
+                    // after 0.2s, move to spinup
+                    if (shootTimer.seconds() > 0.2) {
+                        leftIntake.setPower(0);
+                        rightIntake.setPower(0);
+                        kickerServo.setPower(0);
+
+                        shootTimer.reset();
+                        shootState = ShootState.SPINUP;
+                    }
+                    break;
 
                 case SPINUP:
                     if (flywheelAction == null) {
                         flywheelAction = flywheel.spinUp();
                     }
                     flywheelAction.run(packet);
-
-
-                    // gently pull balls down
-                    if (shootTimer.seconds() < 0.2) {
-                        leftIntake.setPower(-0.2);
-                        rightIntake.setPower(-0.2);
-                        kickerServo.setPower(-0.7);
-                    } else {
-                        leftIntake.setPower(0);
-                        rightIntake.setPower(0);
-                        kickerServo.setPower(-0.7);
-                    }
 
                     // open gates
                     gateServo.setPosition(GATE_OPEN_POS);
