@@ -195,9 +195,6 @@ public class Teleop extends LinearOpMode {
                     }
                     flywheelAction.run(packet);
 
-<<<<<<< HEAD
-=======
-
                     // gently pushes ball away from flywheel so no misfire
                     if (shootTimer.seconds() < 0.2) {
                         leftIntake.setPower(-0.2);
@@ -209,7 +206,6 @@ public class Teleop extends LinearOpMode {
                         kickerServo.setPower(-0.7);
                     }
 
->>>>>>> 8afd1e784e318c325308fdaf50f86a7568a0263a
                     // open gates
                     gateServo.setPosition(GATE_OPEN_POS);
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
