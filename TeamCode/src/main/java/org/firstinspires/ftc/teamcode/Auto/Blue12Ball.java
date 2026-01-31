@@ -21,6 +21,7 @@ public class Blue12Ball extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
+        // ------------- positions used during auto -----------------
         Pose2d startPose = new Pose2d(39.16, 56.77, Math.toRadians(0));
         Pose2d shootPose = new Pose2d(19.0, 13, Math.toRadians(45));
         Pose2d collectRow1 = new Pose2d(10.4, 11.0, Math.toRadians(90));
@@ -28,7 +29,6 @@ public class Blue12Ball extends LinearOpMode {
         Pose2d collectRow2 = new Pose2d(-6.5, 6.0, Math.toRadians(90));
         Pose2d finishRow2 = new Pose2d(-6.5, 40.0, Math.toRadians(90));
         Pose2d openDaGate = new Pose2d(10, 60, Math.toRadians(180));
-        //Pose2d lineDaGate = new Pose2d(10, -25, Math.toRadians(-90));
         Pose2d collectRow3 = new Pose2d(-31,20,Math.toRadians(90));
         Pose2d finishRow3 = new Pose2d(-31,42, Math.toRadians(90));
         Pose2d leavePos = new Pose2d(5, 25, Math.toRadians(90));
@@ -36,9 +36,6 @@ public class Blue12Ball extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         FlyPID flywheel = new FlyPID(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-
-        double strafeScale = 0.5; // 50% speed for strafes
-
 
         // Shoot --- Start
         Actions.runBlocking(
