@@ -25,9 +25,7 @@ import java.util.Locale;
 
 @TeleOp(name="Teleop_Limelight", group="1) Main OpModes")
 public class Teleop_Limelight extends LinearOpMode {
-
-    private final AprilTag
-
+    
     // Gate positions
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
     private final double LEFT_GATE_OPEN_POS = 0.2167;
