@@ -11,16 +11,16 @@ public class FlyPID {
 
     private final DcMotorEx leftShootMotor;
     private final DcMotorEx rightShootMotor;
-    private final Servo gateServo, leftGateServo;
+    private final Servo rightGateServo, leftGateServo;
 
     public static final double TARGET_VELOCITY = 1100;
     public static final double FAR_VELOCITY = 2100;
 
     public static final double IDLE_VELOCITY = TARGET_VELOCITY / 1.1; // 575
-    private static final double GATE_OPEN_POS = .1;
-    private static final double GATE_CLOSED_POS = 0.7;
-    private static final double LEFT_GATE_CLOSED_POS = .15;
-    private static final double LEFT_GATE_OPEN_POS = 0.75;
+    private static final double RIGHT_GATE_OPEN_POS = .1;
+    private static final double RIGHT_GATE_CLOSED_POS = 0.7;
+    private static final double LEFT_GATE_CLOSED_POS = .1;
+    private static final double LEFT_GATE_OPEN_POS = 0.7;
 
     public void manualPower(double power) {
         leftShootMotor.setPower(power);
@@ -34,7 +34,7 @@ public class FlyPID {
     public FlyPID(HardwareMap hardwareMap) {
         leftShootMotor = hardwareMap.get(DcMotorEx.class, "leftShootMotor");
         rightShootMotor = hardwareMap.get(DcMotorEx.class, "rightShootMotor");
-        gateServo = hardwareMap.get(Servo.class, "gateServo");
+        rightGateServo = hardwareMap.get(Servo.class, "rightGateServo");
         leftGateServo = hardwareMap.get(Servo.class, "leftGateServo");
 
         leftShootMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -60,7 +60,7 @@ public class FlyPID {
     /** Call every loop while active */
     public Action spinUp() {
         return packet -> {
-            gateServo.setPosition(GATE_OPEN_POS);
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
             leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
             leftShootMotor.setVelocity(TARGET_VELOCITY);
             rightShootMotor.setPower(1.0);
@@ -74,7 +74,7 @@ public class FlyPID {
 
     public Action spinUpFar() {
         return packet -> {
-            gateServo.setPosition(GATE_OPEN_POS);
+            rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
             leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
             leftShootMotor.setVelocity(FAR_VELOCITY);
             rightShootMotor.setPower(1.0);
@@ -88,7 +88,7 @@ public class FlyPID {
     /** Call every loop while idle */
     public Action idle() {
         return packet -> {
-            gateServo.setPosition(GATE_CLOSED_POS);
+            rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
             leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
             leftShootMotor.setVelocity(IDLE_VELOCITY);
             rightShootMotor.setPower(0.5); // mirrors half-speed behavior
@@ -104,7 +104,7 @@ public class FlyPID {
 
     public Action stop() {
         return packet -> {
-            gateServo.setPosition(GATE_CLOSED_POS);
+            rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
             leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
             leftShootMotor.setPower(0);
             rightShootMotor.setPower(0);

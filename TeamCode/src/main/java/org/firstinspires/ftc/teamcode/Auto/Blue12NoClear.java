@@ -22,14 +22,14 @@ public class Blue12NoClear extends LinearOpMode {
     public void runOpMode() {
         waitForStart();
         Pose2d startPose = new Pose2d(39.16, 56.77, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(19.0, 13, Math.toRadians(47));
-        Pose2d shootPose2 = new Pose2d(19.0, 13, Math.toRadians(47));
+        Pose2d shootPose = new Pose2d(19.0, 13, Math.toRadians(49));
+        Pose2d shootPose2 = new Pose2d(19.0, 13, Math.toRadians(49));
         Pose2d collectRow1 = new Pose2d(12.4, 11.0, Math.toRadians(90));
         Pose2d finishRow1 = new Pose2d(12.4, 38.0, Math.toRadians(90));
         Pose2d collectRow2 = new Pose2d(-6.5, 6.0, Math.toRadians(90));
         Pose2d finishRow2 = new Pose2d(-6.5, 40.0, Math.toRadians(90));
         Pose2d openDaGate = new Pose2d(10, 60, Math.toRadians(180));
-        Pose2d collectRow3 = new Pose2d(-31,20,Math.toRadians(90));
+        Pose2d collectRow3 = new Pose2d(-31,16,Math.toRadians(90));
         Pose2d finishRow3 = new Pose2d(-31,42, Math.toRadians(90));
         //Pose2d lineDaGate = new Pose2d(10, -25, Math.toRadians(-90));
         Pose2d pushPos = new Pose2d(-58, 8, Math.toRadians(0));

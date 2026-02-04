@@ -16,23 +16,24 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
 
 @Config
-@Autonomous(name = "RedCollabClose", group = "Autonomous")
-public class RedCollabClose extends LinearOpMode {
+@Autonomous(name = "BlueCollabClose", group = "Autonomous")
+public class BlueCollabClose extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
-        Pose2d startPose = new Pose2d(39.16, -56.77, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(21.0, -13, Math.toRadians(-45));
-        Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
-        Pose2d finishRow1 = new Pose2d(21.4, -45.0, Math.toRadians(-90));
-        Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));
-        Pose2d finishRow2 = new Pose2d(-1.5, -45.0, Math.toRadians(-90));
-        Pose2d openDaGate = new Pose2d(10, -58, Math.toRadians(-180));
-        Pose2d openDaGate2 = new Pose2d(6, -58, Math.toRadians(0));
-        Pose2d alignRamp1 = new Pose2d(-1.5, -44, Math.toRadians(-70));
-        Pose2d alignRamp2 = new Pose2d(-1.5, -57, Math.toRadians(-60));
-        Pose2d alignRamp3 = new Pose2d(-13, -56, Math.toRadians(-50));
-        Pose2d leavePos = new Pose2d(10, -25, Math.toRadians(-90));
+        Pose2d startPose = new Pose2d(39.16, 56.77, Math.toRadians(0));
+        Pose2d shootPose = new Pose2d(19.0, 13, Math.toRadians(49));
+        Pose2d shootPose2 = new Pose2d(19.0, 13, Math.toRadians(51));
+        Pose2d collectRow1 = new Pose2d(13.4, 11.0, Math.toRadians(90));
+        Pose2d finishRow1 = new Pose2d(13.4, 37.0, Math.toRadians(90));
+        Pose2d collectRow2 = new Pose2d(-6.5, 6.0, Math.toRadians(90));
+        Pose2d finishRow2 = new Pose2d(-6.5, 40.0, Math.toRadians(90));
+        Pose2d openDaGate = new Pose2d(10, 57, Math.toRadians(180));
+        Pose2d openDaGate2 = new Pose2d(0, 57, Math.toRadians(0));
+        Pose2d alignRamp1 = new Pose2d(-7, 41, Math.toRadians(70));
+        Pose2d alignRamp2 = new Pose2d(-7, 55, Math.toRadians(60));
+        Pose2d alignRamp3 = new Pose2d(-20.5, 53, Math.toRadians(50));
+        Pose2d leavePos = new Pose2d(5, 25, Math.toRadians(90));
 
 
         //Pose2d collectRow3 = new Pose2d(-24,-20,Math.toRadians(-90));
@@ -132,15 +133,12 @@ public class RedCollabClose extends LinearOpMode {
 
                         // Move to shootPose
                         drive.actionBuilder(openDaGate2)
-                                .setReversed(true)
                                 .strafeToSplineHeading(
                                         shootPose.position,
                                         shootPose.heading)
                                 .build(),
 
                         // Start shooting sequence
-                        intake.stopIntake(),
-                        new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
                         new SleepAction(0.2),
@@ -151,7 +149,7 @@ public class RedCollabClose extends LinearOpMode {
                         intake.FastIntaking(),
                         new SleepAction(.8),
 
-                        flywheel.stop(),
+                        flywheel.idle(),
 
                         // MOVE TO COLLECT ROW 2 with different heading
                         drive.actionBuilder(shootPose)
@@ -169,8 +167,8 @@ public class RedCollabClose extends LinearOpMode {
                         intake.stopIntake(),
                         drive.actionBuilder(collectRow2)
                                 .strafeToLinearHeading(
-                                        shootPose.position,
-                                        shootPose.heading)
+                                        shootPose2.position,
+                                        shootPose2.heading)
                                 .build(),
                         //------SHOOT CYCLE------//
                         intake.stopIntake(),
@@ -187,7 +185,7 @@ public class RedCollabClose extends LinearOpMode {
 
                         flywheel.stop(),
 
-                        drive.actionBuilder(shootPose)
+                        drive.actionBuilder(shootPose2)
                                 .strafeToLinearHeading(
                                         leavePos.position,
                                         leavePos.heading
