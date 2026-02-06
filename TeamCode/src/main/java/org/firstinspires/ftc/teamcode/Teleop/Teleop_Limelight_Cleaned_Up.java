@@ -52,8 +52,8 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
     // Drive variables
     private double forward, turn, strafe;
     /*------------------------- controller based PID tuning (temporary)----------------------------*/
-    double[] stepSizes = {1.0, 0.1, 0.001, 0.0001};
-    int stepIndex = 2;
+    double[] stepSizes = {10, 5 , 1, 0.5, 0.1, 0.05, 0.01 ,0.005, 0.001, 0.0005 , 0.0001};
+    int stepIndex = 1;
     /* ---------------------------------- SHOOT MACRO STATES ------------------------------------- */
     enum ShootState {
         IDLE,
@@ -120,6 +120,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
             forward = -gamepad1.left_stick_y;
             strafe  =  gamepad1.left_stick_x;
             turn    =  gamepad1.right_stick_x;
+
 
         /* -------------------------------- LIMELIGHT RESULTS -------------------------------------*/
             LLResult result = limelight.getLatestResult();
@@ -189,16 +190,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
 
         /* ---------------------------------- MANUAL SHOOTING -------------------------------------*/
             if (shootState == ShootState.IDLE) {
-                if (gamepad1.dpad_left) {
-                    flywheel.manualPower(0.40);
-                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
-                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
-                } else if (gamepad1.dpad_down) {
-                    rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
-                    leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
-                    flywheel.stop().run(packet);
-                }
-            }
+}
         /*------------------------------ CLOSE SHOOT MACRO (CIRCLE) -------------------------------*/
             boolean circle = gamepad1.circle;
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
@@ -299,7 +291,22 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
                     break;
 
             }
-
+            /* ------------------------------------ TELEMETRY ---------------------------------------- */
+            if(gamepad1.squareWasPressed()){
+                stepIndex = (stepIndex + 1) % stepSizes.length;
+            }
+            if(gamepad1.leftBumperWasPressed()){
+                kP += stepSizes[stepIndex];
+            }
+            if(gamepad1.rightBumperWasPressed()){
+                kP -= stepSizes[stepIndex];
+            }
+            if(gamepad1.squareWasPressed()){
+                kD += stepSizes[stepIndex];
+            }
+            if(gamepad1.triangleWasPressed()){
+                kD -= stepSizes[stepIndex];
+            }
         /* ------------------------------------ TELEMETRY ---------------------------------------- */
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("At speed?", flywheel.atSpeed());
