@@ -44,8 +44,8 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
     double kP = 0.02;
     double error = 0;
     double lastError = 0;
-    double goalX = 0; //offset goal
-    double angleTolerance = .4;
+    double goalX = -4; //offset goal
+    double angleTolerance = .5;
     double kD = 0.001;
     double curTime = 0;
     double lastTime = 0;
@@ -291,7 +291,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
                     break;
 
             }
-            /* ------------------------------------ TELEMETRY ---------------------------------------- */
+            /* ------------------------------------ STEP SIZE SWITCHER (TEMPORARY) ---------------------------------------- */
             if(gamepad1.squareWasPressed()){
                 stepIndex = (stepIndex + 1) % stepSizes.length;
             }
