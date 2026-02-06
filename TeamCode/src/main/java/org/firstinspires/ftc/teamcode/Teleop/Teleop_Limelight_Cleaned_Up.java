@@ -312,8 +312,8 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
             telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());
             telemetry.addData("Far Flywheel TPS", flywheel.getVelocity());
-            telemetry.addData("kp lbumper/rbumper", flywheel.getVelocity());
-            telemetry.addData("kd square/triangle", flywheel.getVelocity());
+            telemetry.addData("kp lbumper/rbumper", kP);
+            telemetry.addData("kd square/triangle", kD);
             
             LLStatus status = limelight.getStatus();
             telemetry.addData("Name", "%s",
