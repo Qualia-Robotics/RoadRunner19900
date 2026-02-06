@@ -150,12 +150,18 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
 
                     if (Math.abs(error) < angleTolerance) {
                         turn = 0;
+                        lastError = 0; // new addition, test first
                     } else {
                         double pTerm = error * kP;
 
                         curTime = getRuntime();
                         double dT = curTime - lastTime;
-                        double dTerm = ((error - lastError) / dT) * kD;
+                        double dTerm;
+                        if (dT > 0.01) {
+                            dTerm = ((error - lastError) / dT) * kD;
+                        } else {
+                            dTerm = 0;
+                        }
 
                         turn = Range.clip(pTerm + dTerm, -0.4, 0.4);
 
@@ -163,6 +169,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
                         lastTime = curTime;
                     }
                 } else {
+                    turn = 0;
                     lastTime = getRuntime();
                     lastError = 0;
                 }
