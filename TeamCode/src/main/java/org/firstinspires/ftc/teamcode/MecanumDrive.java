@@ -56,10 +56,10 @@ import java.util.List;
 public final class MecanumDrive {
     public void drive(double forward, double strafe, double turn) {
         // Just scale down to max 1.0 power
-        leftFront.setPower(Range.clip(forward + strafe + turn, -1.0, 1.0));
-        leftBack.setPower(Range.clip(forward - strafe + turn, -1.0, 1.0));
-        rightFront.setPower(Range.clip(forward - strafe - turn, -1.0, 1.0));
-        rightBack.setPower(Range.clip(forward + strafe - turn, -1.0, 1.0));
+        leftFront.setPower(forward + strafe + turn);
+        leftBack.setPower(forward - strafe + turn);
+        rightFront.setPower(forward - strafe - turn);
+        rightBack.setPower(forward + strafe - turn);
     }
 
     public static class Params {

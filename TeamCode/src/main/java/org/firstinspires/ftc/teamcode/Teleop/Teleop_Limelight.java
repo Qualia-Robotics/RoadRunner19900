@@ -59,18 +59,17 @@ public class Teleop_Limelight extends LinearOpMode {
     private final double MAX_POWER = 0.8;
 
     // ---------------------- PD  controller -------------------
-    double kP = 0.2;
+    double kP = 0.02;
     double error = 0;
     double lastError = 0;
     double goalX = 0; //offset goal
-    double angleTolerance = 5;
-    double kD = 0.0001;
+    double angleTolerance = .4;
+    double kD = 0.001;
     double curTime = 0;
     double lastTime = 0;
 
     // Drive variables
     private double forward, turn, strafe;
-    GoBildaPinpointDriver pinpoint;
     //-------------------------- controller based PID tuning -------------------------
     double[] stepSizes = {1.0, 0.1, 0.001, 0.0001};
     int stepIndex = 2;
@@ -110,25 +109,12 @@ public class Teleop_Limelight extends LinearOpMode {
         rightGateServo = hardwareMap.get(Servo.class, "rightGateServo");
         leftGateServo = hardwareMap.get(Servo.class, "leftGateServo");
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         telemetry.setMsTransmissionInterval(11);
-
         limelight.pipelineSwitch(0);
-
 
         FlyPID flywheel = new FlyPID(hardwareMap);
         Action flywheelAction = null;
-
-        pinpoint.setOffsets(-84.0, 171.4, DistanceUnit.MM);
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setEncoderDirections(
-                GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                GoBildaPinpointDriver.EncoderDirection.FORWARD
-        );
-        pinpoint.recalibrateIMU();
-        pinpoint.resetPosAndIMU();
 
         fr.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.FORWARD);
@@ -187,7 +173,7 @@ public class Teleop_Limelight extends LinearOpMode {
             //----------auto align rotation logic ------------------
             if (gamepad1.a) {
                 if (tag24 != null) {
-                    error = goalX - tag24.getTargetXDegrees(); // tx
+                    error = tag24.getTargetXDegrees() - goalX;
 
                     if (Math.abs(error) < angleTolerance) {
                         turn = 0;
@@ -394,16 +380,9 @@ public class Teleop_Limelight extends LinearOpMode {
             }
 
             /* -------- TELEMETRY -------- */
-            Pose2D pos = pinpoint.getPosition();
-            telemetry.addData("Position",
-                    String.format(Locale.US, "{X: %.2f, Y: %.2f, H: %.2f}",
-                            pos.getX(DistanceUnit.INCH),
-                            pos.getY(DistanceUnit.INCH),
-                            pos.getHeading(AngleUnit.DEGREES)));
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());
-            telemetry.addData("Status", pinpoint.getDeviceStatus());
             telemetry.addData("Far Flywheel TPS", flywheel.getVelocity());
             LLStatus status = limelight.getStatus();
             telemetry.addData("Name", "%s",
