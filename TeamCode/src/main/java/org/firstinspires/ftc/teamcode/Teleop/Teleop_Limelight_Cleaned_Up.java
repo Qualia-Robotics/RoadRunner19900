@@ -1,47 +1,35 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-
 
 import java.util.List;
-import java.util.Locale;
 
-@TeleOp(name="Teleop_Limelight", group="1) Main OpModes")
-public class Teleop_Limelight extends LinearOpMode {
+@TeleOp(name="Teleop_Limelight_Cleaned_Up", group="1) Main OpModes")
+public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
 
-    // Gate positions
+    /*------------------------------------ GATE POSITIONS ---------------------------------------- */
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
     private final double LEFT_GATE_OPEN_POS = 0.2167;
     private final double RIGHT_GATE_CLOSED_POS = 0.1;
     private final double LEFT_GATE_CLOSED_POS = 0.1;
+    /* ---------------------------------- HARDWARE VARIABLES --------------------------------------*/
     // Limelight
     private Limelight3A limelight;
     // Drive motors
@@ -49,11 +37,10 @@ public class Teleop_Limelight extends LinearOpMode {
     // Intake & shooter
     private DcMotor leftIntake, rightIntake;
     // Servos
-    private CRServo kickerServo;
     private Servo rightGateServo, leftGateServo;
     // Constants
     private final double MAX_POWER = 0.8;
-    // ---------------------- PD  controller -------------------
+    /* ----------------------------  LIMELIGHT BASED PD controller --------------------------------*/
     double kP = 0.02;
     double error = 0;
     double lastError = 0;
@@ -64,13 +51,12 @@ public class Teleop_Limelight extends LinearOpMode {
     double lastTime = 0;
     // Drive variables
     private double forward, turn, strafe;
-    //-------------------------- controller based PID tuning -------------------------
+    /*------------------------- controller based PID tuning (temporary)----------------------------*/
     double[] stepSizes = {1.0, 0.1, 0.001, 0.0001};
     int stepIndex = 2;
-    /* ================= SHOOT MACRO ================= */
+    /* ---------------------------------- SHOOT MACRO STATES ------------------------------------- */
     enum ShootState {
         IDLE,
-        PRE_PULL,
         SPINUP,
         SPINUPFAR,
         SHOOT,
@@ -80,11 +66,11 @@ public class Teleop_Limelight extends LinearOpMode {
     ElapsedTime shootTimer = new ElapsedTime();
     boolean lastCircle = false;
 
-    /* =============================================== */
+    /* ------------------------------------------------------------------------------------------- */
 
     @Override
     public void runOpMode() {
-
+    /* ----------------------------------- HARDWARE MAPPING ---------------------------------------*/
         fl = hardwareMap.get(DcMotor.class, "leftFront");
         bl = hardwareMap.get(DcMotor.class, "leftBack");
         fr = hardwareMap.get(DcMotor.class, "rightFront");
@@ -95,8 +81,6 @@ public class Teleop_Limelight extends LinearOpMode {
         leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
 
-        kickerServo = hardwareMap.get(CRServo.class, "kickerServo");
-
         rightGateServo = hardwareMap.get(Servo.class, "rightGateServo");
         leftGateServo = hardwareMap.get(Servo.class, "leftGateServo");
 
@@ -106,15 +90,14 @@ public class Teleop_Limelight extends LinearOpMode {
 
         FlyPID flywheel = new FlyPID(hardwareMap);
         Action flywheelAction = null;
-
+        /* ---------------------------------- MOTOR DIRECTIONS ------------------------------------*/
         fr.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.FORWARD);
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
-
         leftIntake.setDirection(DcMotor.Direction.REVERSE);
         rightIntake.setDirection(DcMotor.Direction.FORWARD);
-
+        /*-----------------------------------------------------------------------------------------*/
         leftIntake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftIntake.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -133,12 +116,12 @@ public class Teleop_Limelight extends LinearOpMode {
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
 
-            /* -------- DRIVE -------- */
+        /* -------------------------------------- DRIVE ------------------------------------------ */
             forward = -gamepad1.left_stick_y;
             strafe  =  gamepad1.left_stick_x;
             turn    =  gamepad1.right_stick_x;
 
-            // ------- get april tag info ----------
+        /* -------------------------------- LIMELIGHT RESULTS -------------------------------------*/
             LLResult result = limelight.getLatestResult();
             LLResultTypes.FiducialResult tag24 = null;
 
@@ -160,7 +143,7 @@ public class Teleop_Limelight extends LinearOpMode {
                 telemetry.addData("Tag24", "not visible");
             }
 
-            //----------auto align rotation logic ------------------
+        /*-------------------------------- AUTO ALIGN ROTATION LOGIC ------------------------------*/
             if (gamepad1.a) {
                 if (tag24 != null) {
                     error = tag24.getTargetXDegrees() - goalX;
@@ -189,8 +172,7 @@ public class Teleop_Limelight extends LinearOpMode {
 
             }
             drive.drive(forward, strafe, turn);
-
-            /* -------- INTAKE -------- */
+        /* -------------------------------- ANALOG POWER INTAKE -----------------------------------*/
             double intakePower = gamepad1.right_trigger * MAX_POWER;
             double outtakePower = gamepad1.left_trigger * MAX_POWER;
             double finalPower = intakePower - outtakePower;
@@ -198,7 +180,7 @@ public class Teleop_Limelight extends LinearOpMode {
             leftIntake.setPower(finalPower);
             rightIntake.setPower(finalPower);
 
-            /* ------------------------- MANUAL SHOOTING  ---------------------- */
+        /* ---------------------------------- MANUAL SHOOTING -------------------------------------*/
             if (shootState == ShootState.IDLE) {
                 if (gamepad1.dpad_left) {
                     flywheel.manualPower(0.40);
@@ -210,16 +192,7 @@ public class Teleop_Limelight extends LinearOpMode {
                     flywheel.stop().run(packet);
                 }
             }
-            /*-------------------------------------------------------------------*/
-            if (gamepad1.x) {
-                kickerServo.setPower(1.0);
-                leftIntake.setPower(1.0);
-                rightIntake.setPower(1.0);
-            } else {
-                kickerServo.setPower(0.0);
-            }
-
-            /* -------- CLOSE SHOOT MACRO (CIRCLE) -------- */
+        /*------------------------------ CLOSE SHOOT MACRO (CIRCLE) -------------------------------*/
             boolean circle = gamepad1.circle;
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
                 shootState = ShootState.SPINUP;
@@ -229,44 +202,14 @@ public class Teleop_Limelight extends LinearOpMode {
 
             switch (shootState) {
 
-                /*case PRE_PULL:
-                    // reverse intake to settle balls
-                    leftIntake.setPower(-0.35);
-                    rightIntake.setPower(-0.35);
-                    kickerServo.setPower(-0.7);
-
-                    // keep gates closed
-                    rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
-                    leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
-
-                    // after 0.2s, move to spinup
-                    if (shootTimer.seconds() > 0.0) {
-                        leftIntake.setPower(0);
-                        rightIntake.setPower(0);
-                        kickerServo.setPower(0);
-
-                        shootTimer.reset();
-                        shootState = ShootState.SPINUP;
-                    }
-                    break;*/
-
                 case SPINUP:
                     if (flywheelAction == null) {
                         flywheelAction = flywheel.spinUp();
                     }
                     flywheelAction.run(packet);
-                    // gently pushes ball away from flywheel so no misfire
-                    /*if (shootTimer.seconds() < 0.2) {
-                        leftIntake.setPower(-0.2);
-                        rightIntake.setPower(-0.2);
-                        kickerServo.setPower(-0.7);
-                    } else {
-                        leftIntake.setPower(0);
-                        rightIntake.setPower(0);
-                        kickerServo.setPower(-0.7);
-                    }*/
+
                     // open gates
-                    rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
                     // advance once flywheel reaches speed
@@ -281,9 +224,8 @@ public class Teleop_Limelight extends LinearOpMode {
                     if (shootTimer.seconds() > 0.1) { // small buffer
                         leftIntake.setPower(1.0);
                         rightIntake.setPower(1.0);
-                        kickerServo.setPower(1.0);
                     }
-
+                    //shoot state lasts for 1 second
                     if (shootTimer.seconds() > 1.0) {
                         shootState = ShootState.DONE;
                     }
@@ -294,7 +236,6 @@ public class Teleop_Limelight extends LinearOpMode {
                     flywheelAction = null;
                     leftIntake.setPower(0);
                     rightIntake.setPower(0);
-                    kickerServo.setPower(0);
                     rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
                     leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
 
@@ -302,7 +243,7 @@ public class Teleop_Limelight extends LinearOpMode {
                     break;
 
             }
-            //----------- FAR SHOOT MACRO (DPAD UP)-------------
+        /*------------------------------ FAR SHOOT MACRO (DPAD UP) --------------------------------*/
             boolean dpadUp = gamepad1.dpad_up;
             if (dpadUp && !lastCircle && shootState == ShootState.IDLE) {
                 shootState = ShootState.SPINUPFAR;
@@ -318,19 +259,8 @@ public class Teleop_Limelight extends LinearOpMode {
                     }
                     flywheelAction.run(packet);
 
-                    // gently push ball away from flywheel so no misfire
-                    if (shootTimer.seconds() < 0.2) {
-                        leftIntake.setPower(-0.2);
-                        rightIntake.setPower(-0.2);
-                        kickerServo.setPower(-0.7);
-                    } else {
-                        leftIntake.setPower(0);
-                        rightIntake.setPower(0);
-                        kickerServo.setPower(-0.7);
-                    }
-
                     // open gates
-                    rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
                     // advance once flywheel reaches speed
@@ -338,16 +268,14 @@ public class Teleop_Limelight extends LinearOpMode {
                         shootTimer.reset();
                         shootState = ShootState.SHOOT;
                     }
-
                     break;
 
                 case SHOOT:
                     if (shootTimer.seconds() > 0.1) { // small buffer
                         leftIntake.setPower(1.0);
                         rightIntake.setPower(1.0);
-                        kickerServo.setPower(1.0);
                     }
-
+                    //shoot state lasts for 1 second
                     if (shootTimer.seconds() > 1.0) {
                         shootState = ShootState.DONE;
                     }
@@ -358,7 +286,6 @@ public class Teleop_Limelight extends LinearOpMode {
                     flywheelAction = null;
                     leftIntake.setPower(0);
                     rightIntake.setPower(0);
-                    kickerServo.setPower(0);
                     rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
                     leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
                     shootState = ShootState.IDLE;
@@ -366,7 +293,7 @@ public class Teleop_Limelight extends LinearOpMode {
 
             }
 
-            /* -------- TELEMETRY -------- */
+        /* ------------------------------------ TELEMETRY ---------------------------------------- */
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());

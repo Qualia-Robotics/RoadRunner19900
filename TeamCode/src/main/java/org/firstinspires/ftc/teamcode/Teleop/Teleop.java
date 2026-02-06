@@ -34,7 +34,6 @@ public class Teleop extends LinearOpMode {
 
     // Intake & shooter
     private DcMotor leftIntake, rightIntake;
-
     // Servos
     private CRServo kickerServo;
     private Servo rightGateServo, leftGateServo;
