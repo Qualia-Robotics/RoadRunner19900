@@ -103,7 +103,7 @@ public class RedCollabClose extends LinearOpMode {
                         new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.2),
+                        new SleepAction(0.0),
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),
@@ -143,15 +143,13 @@ public class RedCollabClose extends LinearOpMode {
                         new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.2),
+                        new SleepAction(0.0),
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),
 
                         intake.FastIntaking(),
                         new SleepAction(.8),
-
-                        flywheel.stop(),
 
                         // MOVE TO COLLECT ROW 2 with different heading
                         drive.actionBuilder(shootPose)
@@ -177,7 +175,7 @@ public class RedCollabClose extends LinearOpMode {
                         new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.2),
+                        new SleepAction(0.0),
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),

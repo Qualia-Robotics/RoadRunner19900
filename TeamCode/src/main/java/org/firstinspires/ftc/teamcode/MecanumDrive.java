@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -53,6 +54,14 @@ import java.util.List;
 
 @Config
 public final class MecanumDrive {
+    public void drive(double forward, double strafe, double turn) {
+        // Just scale down to max 1.0 power
+        leftFront.setPower(Range.clip(forward + strafe + turn, -1.0, 1.0));
+        leftBack.setPower(Range.clip(forward - strafe + turn, -1.0, 1.0));
+        rightFront.setPower(Range.clip(forward - strafe - turn, -1.0, 1.0));
+        rightBack.setPower(Range.clip(forward + strafe - turn, -1.0, 1.0));
+    }
+
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on

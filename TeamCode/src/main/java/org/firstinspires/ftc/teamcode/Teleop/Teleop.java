@@ -26,8 +26,8 @@ public class Teleop extends LinearOpMode {
     // Gate positions
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
     private final double LEFT_GATE_OPEN_POS = 0.2167;
-    private final double RIGHT_GATE_CLOSED_POS = 0.1;
-    private final double LEFT_GATE_CLOSED_POS = 0.1;
+    private final double RIGHT_GATE_CLOSED_POS = 0.095;
+    private final double LEFT_GATE_CLOSED_POS = 0.095;
 
     // Drive motors
     private DcMotor fl, bl, fr, br;
@@ -160,14 +160,14 @@ public class Teleop extends LinearOpMode {
             /* -------- CLOSE SHOOT MACRO (CIRCLE) -------- */
             boolean circle = gamepad1.circle;
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
-                shootState = ShootState.PRE_PULL;
+                shootState = ShootState.SPINUP;
                 shootTimer.reset();
             }
             lastCircle = circle;
 
             switch (shootState) {
 
-                case PRE_PULL:
+                /*case PRE_PULL:
                     // reverse intake to settle balls
                     leftIntake.setPower(-0.35);
                     rightIntake.setPower(-0.35);
@@ -178,7 +178,7 @@ public class Teleop extends LinearOpMode {
                     leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
 
                     // after 0.2s, move to spinup
-                    if (shootTimer.seconds() > 0.2) {
+                    if (shootTimer.seconds() > 0.01) {
                         leftIntake.setPower(0);
                         rightIntake.setPower(0);
                         kickerServo.setPower(0);
@@ -187,7 +187,7 @@ public class Teleop extends LinearOpMode {
                         shootState = ShootState.SPINUP;
                     }
                     break;
-
+                 */
                 case SPINUP:
                     if (flywheelAction == null) {
                         flywheelAction = flywheel.spinUp();
@@ -195,7 +195,7 @@ public class Teleop extends LinearOpMode {
                     flywheelAction.run(packet);
 
                     // gently pushes ball away from flywheel so no misfire
-                    if (shootTimer.seconds() < 0.2) {
+                    /*if (shootTimer.seconds() < 0.0) {
                         leftIntake.setPower(-0.2);
                         rightIntake.setPower(-0.2);
                         kickerServo.setPower(-0.7);
@@ -203,7 +203,7 @@ public class Teleop extends LinearOpMode {
                         leftIntake.setPower(0);
                         rightIntake.setPower(0);
                         kickerServo.setPower(-0.7);
-                    }
+                    }*/
 
                     // open gates
                     rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
@@ -259,7 +259,7 @@ public class Teleop extends LinearOpMode {
                     flywheelAction.run(packet);
 
                     // gently push ball away from flywheel so no misfire
-                    if (shootTimer.seconds() < 0.2) {
+                    if (shootTimer.seconds() < 0.01) {
                         leftIntake.setPower(-0.2);
                         rightIntake.setPower(-0.2);
                         kickerServo.setPower(-0.7);

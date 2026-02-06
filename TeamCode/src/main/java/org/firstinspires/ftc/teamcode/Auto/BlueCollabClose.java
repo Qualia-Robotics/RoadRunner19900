@@ -104,7 +104,7 @@ public class BlueCollabClose extends LinearOpMode {
                         new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.2),
+                        new SleepAction(0.0),
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),
@@ -141,7 +141,7 @@ public class BlueCollabClose extends LinearOpMode {
                         // Start shooting sequence
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.2),
+                        new SleepAction(0.0),
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),
@@ -175,7 +175,7 @@ public class BlueCollabClose extends LinearOpMode {
                         new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.2),
+                        new SleepAction(0.0),
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),

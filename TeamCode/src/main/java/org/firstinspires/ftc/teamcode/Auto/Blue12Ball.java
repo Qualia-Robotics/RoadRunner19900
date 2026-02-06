@@ -95,7 +95,7 @@ public class Blue12Ball extends LinearOpMode {
                         new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.1),
+                        new SleepAction(0.0), // not needed right now
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),
@@ -128,7 +128,7 @@ public class Blue12Ball extends LinearOpMode {
                         new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.1),
+                        new SleepAction(0.0),
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),
@@ -167,7 +167,7 @@ public class Blue12Ball extends LinearOpMode {
                         new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
-                        new SleepAction(0.1),
+                        new SleepAction(0.0),
 
                         flywheel.spinUp(),
                         new SleepAction(0.8),

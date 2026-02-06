@@ -17,10 +17,11 @@ public class FlyPID {
     public static final double FAR_VELOCITY = 2100;
 
     public static final double IDLE_VELOCITY = TARGET_VELOCITY / 1.1; // 575
-    private static final double RIGHT_GATE_OPEN_POS = .1;
-    private static final double RIGHT_GATE_CLOSED_POS = 0.7;
-    private static final double LEFT_GATE_CLOSED_POS = .1;
-    private static final double LEFT_GATE_OPEN_POS = 0.7;
+    private final double RIGHT_GATE_OPEN_POS = 0.2167;
+    private final double LEFT_GATE_OPEN_POS = 0.2167;
+    private final double RIGHT_GATE_CLOSED_POS = 0.095;
+    private final double LEFT_GATE_CLOSED_POS = 0.095;
+
 
     public void manualPower(double power) {
         leftShootMotor.setPower(power);
