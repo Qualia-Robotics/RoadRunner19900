@@ -45,7 +45,7 @@ public class Teleop_LLO extends LinearOpMode {
     double error = 0;
     double lastError = 0;
     double goalX = -4; //offset goal
-    double angleTolerance = .5;
+    double angleTolerance = .3;
     double kD = 0.001;
     double curTime = 0;
     double lastTime = 0;
@@ -98,6 +98,12 @@ public class Teleop_LLO extends LinearOpMode {
         br.setDirection(DcMotor.Direction.FORWARD);
         fl.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.REVERSE);
+
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         leftIntake.setDirection(DcMotor.Direction.REVERSE);
         rightIntake.setDirection(DcMotor.Direction.FORWARD);
         /*-----------------------------------------------------------------------------------------*/
@@ -310,11 +316,11 @@ public class Teleop_LLO extends LinearOpMode {
             telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());
             telemetry.addData("Far Flywheel TPS", flywheel.getVelocity());
-            telemetry.addData("kP lbumper/rbumper", kP);
-            telemetry.addData("kD square/triangle", kD);
+            //telemetry.addData("kP lbumper/rbumper", kP);
+            //telemetry.addData("kD square/triangle", kD);
             
             LLStatus status = limelight.getStatus();
-            telemetry.addData("Name", "%s",
+            //telemetry.addData("Name", "%s",
                     status.getName());
             telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
                     status.getTemp(), status.getCpu(),(int)status.getFps());
@@ -325,9 +331,6 @@ public class Teleop_LLO extends LinearOpMode {
             if (result != null && result.isValid()) {
                 // Access general information
                 Pose3D botpose = result.getBotpose();
-                double captureLatency = result.getCaptureLatency();
-                double targetingLatency = result.getTargetingLatency();
-                double parseLatency = result.getParseLatency();
 
                 telemetry.addData("tx", result.getTx());
                 telemetry.addData("txnc", result.getTxNC());
