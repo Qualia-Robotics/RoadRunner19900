@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 
 import java.util.List;
 
-@TeleOp(name="Teleop_Limelight_Cleaned_Up", group="1) Main OpModes")
-public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
+@TeleOp(name="Teleop_LL", group="1) Main OpModes")
+public class Teleop_LL extends LinearOpMode {
 
     /*------------------------------------ GATE POSITIONS ---------------------------------------- */
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
@@ -58,6 +58,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
     enum ShootState {
         IDLE,
         SPINUP,
+        SPINUPMID,
         SPINUPFAR,
         SHOOT,
         DONE
@@ -66,6 +67,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
     ElapsedTime shootTimer = new ElapsedTime();
     boolean lastCircle = false;
     boolean lastDpadUp = false;
+    boolean lastDpadLeft=false;
 
     /* ------------------------------------------------------------------------------------------- */
 
@@ -186,25 +188,30 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
             double outtakePower = gamepad1.left_trigger * MAX_POWER;
             double finalPower = intakePower - outtakePower;
 
-            leftIntake.setPower(finalPower);
-            rightIntake.setPower(finalPower);
-
         /* ---------------------------------- MANUAL SHOOTING -------------------------------------*/
             if (shootState == ShootState.IDLE) {
-}
-        /*------------------------------ CLOSE SHOOT MACRO (CIRCLE) -------------------------------*/
+                leftIntake.setPower(finalPower);
+                rightIntake.setPower(finalPower);
+            }
+        /*------------------------------------ SHOOT MACRO ----------------------------------------*/
             boolean circle = gamepad1.circle;
             boolean dpadUp= gamepad1.dpad_up;
+            boolean dpadLeft=gamepad1.dpad_left;
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
                 shootState = ShootState.SPINUP;
                 shootTimer.reset();
             }
             if (dpadUp && !lastDpadUp && shootState == ShootState.IDLE) {
-                shootState = ShootState.SPINUP;
+                shootState = ShootState.SPINUPFAR;
+                shootTimer.reset();
+            }
+            if (dpadLeft && !lastDpadLeft && shootState == ShootState.IDLE) {
+                shootState = ShootState.SPINUPMID;
                 shootTimer.reset();
             }
             lastCircle = circle;
             lastDpadUp = dpadUp;
+            lastDpadLeft = dpadLeft;
 
             switch (shootState) {
 
@@ -241,6 +248,20 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
                         shootState = ShootState.SHOOT;
                     }
                     break;
+                case SPINUPMID:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUpMid();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atMidSpeed()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+                    break;
 
                 case SHOOT:
                     if (shootTimer.seconds() > 0.1) {
@@ -269,7 +290,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
                     break;
             }
 
-            /* ------------------------------------ STEP SIZE SWITCHER (TEMPORARY) ---------------------------------------- */
+            /* -------------------------- STEP SIZE SWITCHER (TEMPORARY) ---------------------------*/
             if(gamepad1.dpadLeftWasPressed()){
                 stepIndex = (stepIndex + 1) % stepSizes.length;
             }

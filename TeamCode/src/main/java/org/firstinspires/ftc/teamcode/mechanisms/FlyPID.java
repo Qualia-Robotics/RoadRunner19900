@@ -14,6 +14,7 @@ public class FlyPID {
     private final Servo rightGateServo, leftGateServo;
 
     public static final double TARGET_VELOCITY = 1100;
+    public static final double MID_VELOCITY = 1250;
     public static final double FAR_VELOCITY = 2100;
 
     public static final double IDLE_VELOCITY = TARGET_VELOCITY / 1.1; // 575
@@ -72,6 +73,19 @@ public class FlyPID {
             return false; // keep running
         };
     }
+    public Action spinUpMid() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(MID_VELOCITY);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Mid Flywheel TPS", velocity);
+            packet.put("At Mid Speed", velocity >= MID_VELOCITY * 0.97);
+
+            return false; // keep running
+        };
+    }
 
     public Action spinUpFar() {
         return packet -> {
@@ -86,6 +100,7 @@ public class FlyPID {
             return false; // keep running
         };
     }
+
     /** Call every loop while idle */
     public Action idle() {
         return packet -> {
@@ -121,6 +136,9 @@ public class FlyPID {
 
     public boolean atFarSpeed() {
         return leftShootMotor.getVelocity() >= FAR_VELOCITY * 0.97;
+    }
+    public boolean atMidSpeed() {
+        return leftShootMotor.getVelocity() >= MID_VELOCITY * 0.97;
     }
 
 }
