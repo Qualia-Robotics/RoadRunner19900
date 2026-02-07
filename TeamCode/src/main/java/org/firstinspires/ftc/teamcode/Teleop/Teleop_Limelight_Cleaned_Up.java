@@ -65,6 +65,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
     ShootState shootState = ShootState.IDLE;
     ElapsedTime shootTimer = new ElapsedTime();
     boolean lastCircle = false;
+    boolean lastDpadUp = false;
 
     /* ------------------------------------------------------------------------------------------- */
 
@@ -193,11 +194,17 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
 }
         /*------------------------------ CLOSE SHOOT MACRO (CIRCLE) -------------------------------*/
             boolean circle = gamepad1.circle;
+            boolean dpadUp= gamepad1.dpad_up;
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
                 shootState = ShootState.SPINUP;
                 shootTimer.reset();
             }
+            if (dpadUp && !lastDpadUp && shootState == ShootState.IDLE) {
+                shootState = ShootState.SPINUP;
+                shootTimer.reset();
+            }
             lastCircle = circle;
+            lastDpadUp = dpadUp;
 
             switch (shootState) {
 
@@ -238,55 +245,6 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
                     rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
                     leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
 
-                    shootState = ShootState.IDLE;
-                    break;
-
-            }
-        /*------------------------------ FAR SHOOT MACRO (DPAD UP) --------------------------------*/
-            boolean dpadUp = gamepad1.dpad_up;
-            if (dpadUp && !lastCircle && shootState == ShootState.IDLE) {
-                shootState = ShootState.SPINUPFAR;
-                shootTimer.reset();
-            }
-            lastCircle = dpadUp; // keep the rising-edge logic the same
-
-            switch (shootState) {
-
-                case SPINUPFAR:
-                    if (flywheelAction == null) {
-                        flywheelAction = flywheel.spinUpFar();
-                    }
-                    flywheelAction.run(packet);
-
-                    // open gates
-                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
-                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
-
-                    // advance once flywheel reaches speed
-                    if (flywheel.atFarSpeed()) {
-                        shootTimer.reset();
-                        shootState = ShootState.SHOOT;
-                    }
-                    break;
-
-                case SHOOT:
-                    if (shootTimer.seconds() > 0.1) { // small buffer
-                        leftIntake.setPower(1.0);
-                        rightIntake.setPower(1.0);
-                    }
-                    //shoot state lasts for 1 second
-                    if (shootTimer.seconds() > 1.0) {
-                        shootState = ShootState.DONE;
-                    }
-                    break;
-
-                case DONE:
-                    flywheel.stop().run(packet);
-                    flywheelAction = null;
-                    leftIntake.setPower(0);
-                    rightIntake.setPower(0);
-                    rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
-                    leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
                     shootState = ShootState.IDLE;
                     break;
 
