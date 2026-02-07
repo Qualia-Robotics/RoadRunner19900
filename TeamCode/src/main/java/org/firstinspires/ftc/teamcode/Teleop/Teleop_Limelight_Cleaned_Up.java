@@ -208,47 +208,67 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
 
             switch (shootState) {
 
+                case IDLE:
+                    // do nothing
+                    break;
+
                 case SPINUP:
                     if (flywheelAction == null) {
                         flywheelAction = flywheel.spinUp();
                     }
                     flywheelAction.run(packet);
 
-                    // open gates
                     rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
-                    // advance once flywheel reaches speed
                     if (flywheel.atSpeed()) {
                         shootTimer.reset();
                         shootState = ShootState.SHOOT;
                     }
+                    break;
 
+                case SPINUPFAR:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUpFar();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atFarSpeed()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
                     break;
 
                 case SHOOT:
-                    if (shootTimer.seconds() > 0.1) { // small buffer
+                    if (shootTimer.seconds() > 0.1) {
                         leftIntake.setPower(1.0);
                         rightIntake.setPower(1.0);
                     }
-                    //shoot state lasts for 1 second
+
                     if (shootTimer.seconds() > 1.0) {
                         shootState = ShootState.DONE;
                     }
                     break;
 
                 case DONE:
-                    flywheel.stop().run(packet);
-                    flywheelAction = null;
+                    if (flywheelAction != null) {
+                        flywheel.stop().run(packet);
+                        flywheelAction = null;
+                    }
+
                     leftIntake.setPower(0);
                     rightIntake.setPower(0);
+
                     rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
                     leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
 
                     shootState = ShootState.IDLE;
                     break;
-
             }
+
             /* ------------------------------------ STEP SIZE SWITCHER (TEMPORARY) ---------------------------------------- */
             if(gamepad1.dpadLeftWasPressed()){
                 stepIndex = (stepIndex + 1) % stepSizes.length;
