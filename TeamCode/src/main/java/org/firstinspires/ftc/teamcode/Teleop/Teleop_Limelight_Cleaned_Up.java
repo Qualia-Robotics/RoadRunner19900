@@ -41,12 +41,12 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
     // Constants
     private final double MAX_POWER = 0.8;
     /* ----------------------------  LIMELIGHT BASED PD controller --------------------------------*/
-    double kP = 0.02;
+    double kP = 0.001;
     double error = 0;
     double lastError = 0;
     double goalX = -4; //offset goal
     double angleTolerance = .5;
-    double kD = 0.001;
+    double kD = 0.005;
     double curTime = 0;
     double lastTime = 0;
     // Drive variables
@@ -292,7 +292,7 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
 
             }
             /* ------------------------------------ STEP SIZE SWITCHER (TEMPORARY) ---------------------------------------- */
-            if(gamepad1.squareWasPressed()){
+            if(gamepad1.dpadLeftWasPressed()){
                 stepIndex = (stepIndex + 1) % stepSizes.length;
             }
             if(gamepad1.leftBumperWasPressed()){
@@ -312,8 +312,8 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
             telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());
             telemetry.addData("Far Flywheel TPS", flywheel.getVelocity());
-            telemetry.addData("kp lbumper/rbumper", kP);
-            telemetry.addData("kd square/triangle", kD);
+            telemetry.addData("kP lbumper/rbumper", kP);
+            telemetry.addData("kD square/triangle", kD);
             
             LLStatus status = limelight.getStatus();
             telemetry.addData("Name", "%s",
@@ -324,15 +324,12 @@ public class Teleop_Limelight_Cleaned_Up extends LinearOpMode {
                     status.getPipelineIndex(), status.getPipelineType());
 
 
-            if (result.isValid()) {
+            if (result != null && result.isValid()) {
                 // Access general information
                 Pose3D botpose = result.getBotpose();
                 double captureLatency = result.getCaptureLatency();
                 double targetingLatency = result.getTargetingLatency();
                 double parseLatency = result.getParseLatency();
-                telemetry.addData("LL Latency", captureLatency + targetingLatency);
-                telemetry.addData("Parse Latency", parseLatency);
-                telemetry.addData("PythonOutput", java.util.Arrays.toString(result.getPythonOutput()));
 
                 telemetry.addData("tx", result.getTx());
                 telemetry.addData("txnc", result.getTxNC());
