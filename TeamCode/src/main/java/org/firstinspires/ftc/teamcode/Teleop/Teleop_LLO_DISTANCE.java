@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 
 import java.util.List;
 
-@TeleOp(name="Teleop_LLO", group="1) Main OpModes")
-public class Teleop_LLO extends LinearOpMode {
+@TeleOp(name="Teleop_LLO_DISTANCE", group="1) Main OpModes")
+public class Teleop_LLO_DISTANCE extends LinearOpMode {
 
     /*------------------------------------ GATE POSITIONS ---------------------------------------- */
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
@@ -51,6 +51,11 @@ public class Teleop_LLO extends LinearOpMode {
     double lastTime = 0;
     // Drive variables
     private double forward, turn, strafe;
+    /* ---------------------------- LIMELIGHT DISTANCE THRESHOLDS ---------------------------- */
+    // meters (Limelight botpose is meters)
+    double CLOSE_DIST = 1.2;
+    double MID_DIST   = 2.2;
+    // FAR = anything above MID_DIST
     /*------------------------- controller based PID tuning (temporary)----------------------------*/
     double[] stepSizes = {10, 5 , 1, 0.5, 0.1, 0.05, 0.01 ,0.005, 0.001, 0.0005 , 0.0001};
     int stepIndex = 1;
@@ -66,9 +71,13 @@ public class Teleop_LLO extends LinearOpMode {
     ShootState shootState = ShootState.IDLE;
     ElapsedTime shootTimer = new ElapsedTime();
     boolean lastCircle = false;
-    boolean lastDpadUp = false;
-    boolean lastDpadLeft=false;
-
+    private double getDistanceToTag(LLResultTypes.FiducialResult tag) {
+        // botpose: X forward, Y left, Z up (meters)
+        Pose3D pose = tag.getTargetPoseRobotSpace();
+        double x = pose.getPosition().x;
+        double y = pose.getPosition().y;
+        return Math.hypot(x, y);
+    }
     /* ------------------------------------------------------------------------------------------- */
 
     @Override
@@ -118,6 +127,8 @@ public class Teleop_LLO extends LinearOpMode {
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
         waitForStart();
+
+
 
         resetRuntime();
         curTime = getRuntime();
@@ -199,24 +210,26 @@ public class Teleop_LLO extends LinearOpMode {
                 rightIntake.setPower(finalPower);
             }
         /*------------------------------------ SHOOT MACRO ----------------------------------------*/
+
             boolean circle = gamepad1.circle;
-            boolean dpadUp= gamepad1.dpad_up;
-            boolean dpadLeft=gamepad1.dpad_left;
-            if (circle && !lastCircle && shootState == ShootState.IDLE) {
-                shootState = ShootState.SPINUP;
+
+            if (circle && !lastCircle && shootState == ShootState.IDLE && tag24 != null) {
+
+                double distance = getDistanceToTag(tag24);
+
+                if (distance < CLOSE_DIST) {
+                    shootState = ShootState.SPINUP;       // close
+                } else if (distance < MID_DIST) {
+                    shootState = ShootState.SPINUPMID;    // mid
+                } else {
+                    shootState = ShootState.SPINUPFAR;    // far
+                }
+
                 shootTimer.reset();
             }
-            if (dpadUp && !lastDpadUp && shootState == ShootState.IDLE) {
-                shootState = ShootState.SPINUPFAR;
-                shootTimer.reset();
-            }
-            if (dpadLeft && !lastDpadLeft && shootState == ShootState.IDLE) {
-                shootState = ShootState.SPINUPMID;
-                shootTimer.reset();
-            }
+
             lastCircle = circle;
-            lastDpadUp = dpadUp;
-            lastDpadLeft = dpadLeft;
+
 
             switch (shootState) {
 
@@ -338,6 +351,12 @@ public class Teleop_LLO extends LinearOpMode {
                 telemetry.addData("tync", result.getTyNC());
 
                 telemetry.addData("Botpose", botpose.toString());
+                if (tag24 != null) {
+                    double dist = getDistanceToTag(tag24);
+                    telemetry.addData("LL Distance (m)", "%.2f", dist);
+                } else {
+                    telemetry.addData("LL Distance (m)", "Tag 24 not visible");
+                }
 
                 // Access barcode results
                 List<LLResultTypes.BarcodeResult> barcodeResults = result.getBarcodeResults();

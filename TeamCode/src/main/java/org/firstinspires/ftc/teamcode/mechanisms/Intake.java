@@ -38,7 +38,6 @@ public class Intake {
         public boolean run(@NonNull TelemetryPacket packet) {
             leftIntake.setPower(0.6);
             rightIntake.setPower(0.6); // likely correct for mirrored motors
-            kickerServo.setPower(1.0);
             return false;
         }
     }
@@ -52,7 +51,6 @@ public class Intake {
         public boolean run(@NonNull TelemetryPacket packet) {
             leftIntake.setPower(1);
             rightIntake.setPower(1); // likely correct for mirrored motors
-            kickerServo.setPower(1.0);
             return false;
         }
     }
@@ -65,7 +63,6 @@ public class Intake {
         public boolean run(@NonNull TelemetryPacket packet) {
             leftIntake.setPower(-0.2);
             rightIntake.setPower(-0.2); // likely correct for mirrored motors
-            kickerServo.setPower(-1.0);
             return false;
         }
     }
@@ -81,7 +78,6 @@ public class Intake {
         public boolean run(@NonNull TelemetryPacket packet) {
             leftIntake.setPower(0);
             rightIntake.setPower(0);
-            kickerServo.setPower(0);
             return false;
         }
     }
