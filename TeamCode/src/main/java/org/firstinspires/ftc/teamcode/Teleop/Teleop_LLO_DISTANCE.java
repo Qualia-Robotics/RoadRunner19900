@@ -7,6 +7,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.limelightvision.LLFieldMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,11 +16,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+
+
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 
 import java.util.List;
+import java.util.Locale;
 
 @TeleOp(name="Teleop_LLO_DISTANCE", group="1) Main OpModes")
 public class Teleop_LLO_DISTANCE extends LinearOpMode {
@@ -53,8 +57,8 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
     private double forward, turn, strafe;
     /* ---------------------------- LIMELIGHT DISTANCE THRESHOLDS ---------------------------- */
     // meters (Limelight botpose is meters)
-    double CLOSE_DIST = 1.2;
-    double MID_DIST   = 2.2;
+    double CLOSE_DIST = 46.7;
+    double MID_DIST   = 74;
     // FAR = anything above MID_DIST
     /*------------------------- controller based PID tuning (temporary)----------------------------*/
     double[] stepSizes = {10, 5 , 1, 0.5, 0.1, 0.05, 0.01 ,0.005, 0.001, 0.0005 , 0.0001};
@@ -71,13 +75,7 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
     ShootState shootState = ShootState.IDLE;
     ElapsedTime shootTimer = new ElapsedTime();
     boolean lastCircle = false;
-    private double getDistanceToTag(LLResultTypes.FiducialResult tag) {
-        // botpose: X forward, Y left, Z up (meters)
-        Pose3D pose = tag.getTargetPoseRobotSpace();
-        double x = pose.getPosition().x;
-        double y = pose.getPosition().y;
-        return Math.hypot(x, y);
-    }
+
     /* ------------------------------------------------------------------------------------------- */
 
     @Override
@@ -166,8 +164,24 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
             } else {
                 telemetry.addData("Tag24", "not visible");
             }
+            /* ------------------------------ LIMELIGHT DISTANCE MATH -------------------------------------*/
+            double distanceFromLimelightToGoalInches = Double.NaN;
 
-        /*-------------------------------- AUTO ALIGN ROTATION LOGIC ------------------------------*/
+            if (tag24 != null) {
+                double ty = tag24.getTargetYDegrees();
+
+                double limelightMountAngleDegrees = 15.0;
+                double limelightLensHeightInches = 11.0;
+                double goalHeightInches = 29.0;
+
+                double angleToGoalDegrees = limelightMountAngleDegrees + ty;
+                double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
+
+                distanceFromLimelightToGoalInches =
+                        (goalHeightInches - limelightLensHeightInches)
+                                / Math.tan(angleToGoalRadians);
+            }
+            /*-------------------------------- AUTO ALIGN ROTATION LOGIC ------------------------------*/
             if (gamepad1.a && tag24 != null) {
 
                 error = tag24.getTargetXDegrees() - goalX;
@@ -215,11 +229,11 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
 
             if (circle && !lastCircle && shootState == ShootState.IDLE && tag24 != null) {
 
-                double distance = getDistanceToTag(tag24);
+                double distance = distanceFromLimelightToGoalInches;
 
                 if (distance < CLOSE_DIST) {
                     shootState = ShootState.SPINUP;       // close
-                } else if (distance < MID_DIST) {
+                } else if (distance > CLOSE_DIST && distance < MID_DIST) {
                     shootState = ShootState.SPINUPMID;    // mid
                 } else {
                     shootState = ShootState.SPINUPFAR;    // far
@@ -308,7 +322,7 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
                     break;
             }
 
-            /* -------------------------- STEP SIZE SWITCHER (TEMPORARY) ----------------------------
+            /* -------------------------- STEP SIZE SWITCHER (TEMPORARY) ----------------------------*/
             if(gamepad1.dpadLeftWasPressed()){
                 stepIndex = (stepIndex + 1) % stepSizes.length;
             }
@@ -318,10 +332,10 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
             if(gamepad1.rightBumperWasPressed()){
                 kP -= stepSizes[stepIndex];
             }
-            if(gamepad1.squareWasPressed()){
+            if(gamepad1.dpad_up){
                 kD += stepSizes[stepIndex];
             }
-            if(gamepad1.triangleWasPressed()){
+            if(gamepad1.dpad_down){
                 kD -= stepSizes[stepIndex];
             }
         /* ------------------------------------ TELEMETRY ---------------------------------------- */
@@ -329,8 +343,8 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
             telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());
             telemetry.addData("Far Flywheel TPS", flywheel.getVelocity());
-            //telemetry.addData("kP lbumper/rbumper", kP);
-            //telemetry.addData("kD square/triangle", kD);
+            telemetry.addData("kP lbumper/rbumper", kP);
+            telemetry.addData("kD square/triangle", kD);
             
             LLStatus status = limelight.getStatus();
             //telemetry.addData("Name", "%s",
@@ -352,7 +366,7 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
 
                 telemetry.addData("Botpose", botpose.toString());
                 if (tag24 != null) {
-                    double dist = getDistanceToTag(tag24);
+                    double dist = distanceFromLimelightToGoalInches;
                     telemetry.addData("LL Distance (m)", "%.2f", dist);
                 } else {
                     telemetry.addData("LL Distance (m)", "Tag 24 not visible");
