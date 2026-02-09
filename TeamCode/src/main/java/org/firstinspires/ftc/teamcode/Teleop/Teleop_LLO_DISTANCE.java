@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -42,6 +44,7 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
     private DcMotor leftIntake, rightIntake;
     // Servos
     private Servo rightGateServo, leftGateServo;
+    private Servo light;
     // Constants
     private final double MAX_POWER = 0.8;
     /* ----------------------------  LIMELIGHT BASED PD controller --------------------------------*/
@@ -49,15 +52,18 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
     double error = 0;
     double lastError = 0;
     double goalX = -4; //offset goal
-    double angleTolerance = .3;
+    double angleTolerance = .05;
     double kD = 0.001;
     double curTime = 0;
     double lastTime = 0;
     // Drive variables
     private double forward, turn, strafe;
+    double lastTurnCmd = 0;
+    double maxTurnDelta = 0.08; // per loop
+
     /* ---------------------------- LIMELIGHT DISTANCE THRESHOLDS ---------------------------- */
     // meters (Limelight botpose is meters)
-    double CLOSE_DIST = 46.7;
+    double CLOSE_DIST = 50;
     double MID_DIST   = 74;
     // FAR = anything above MID_DIST
     /*------------------------- controller based PID tuning (temporary)----------------------------*/
@@ -94,6 +100,8 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
         rightGateServo = hardwareMap.get(Servo.class, "rightGateServo");
         leftGateServo = hardwareMap.get(Servo.class, "leftGateServo");
 
+        light = hardwareMap.get(Servo.class, "light");
+
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         telemetry.setMsTransmissionInterval(11);
         limelight.pipelineSwitch(0);
@@ -121,6 +129,7 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
         leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
 
         limelight.start();
+        light.setPosition(0);
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
@@ -134,9 +143,9 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
 
-        /* -------------------------------------- DRIVE ------------------------------------------ */
+            /* -------------------------------------- DRIVE ------------------------------------------ */
             forward = -gamepad1.left_stick_y;
-            strafe  =  gamepad1.left_stick_x;
+            strafe = gamepad1.left_stick_x;
             double driverTurn = gamepad1.right_stick_x;
             double assistScale = 1.0 - Math.min(1.0, Math.abs(driverTurn));
             double autoTurn = 0.0;
@@ -199,7 +208,31 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
                             ? ((error - lastError) / dT) * kD
                             : 0;
 
-                    autoTurn = Range.clip(pTerm + dTerm, -0.3, 0.3);
+                    double output = pTerm + dTerm;
+
+// deadband for stopping power
+                    if (Math.abs(error) < angleTolerance) {
+                        output = 0;
+                    }
+
+// minimum usable power cutoff
+                    double MIN_TURN_POWER = 0.001;
+                    if (Math.abs(error) > angleTolerance) {
+                        if (Math.abs(output) < MIN_TURN_POWER) {
+                            output = Math.copySign(MIN_TURN_POWER, output);
+                        }
+                    } else {
+                        output = 0;
+                    }
+
+
+                    autoTurn = Range.clip(output, -0.3, 0.3);
+
+                    double delta = autoTurn - lastTurnCmd;
+                    delta = Range.clip(delta, -maxTurnDelta, maxTurnDelta);
+
+                    autoTurn = lastTurnCmd + delta;
+                    lastTurnCmd = autoTurn;
 
                     lastError = error;
                     lastTime = curTime;
@@ -207,8 +240,22 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
 
             } else {
                 lastError = 0;
+                lastTurnCmd = 0;
                 lastTime = getRuntime();
             }
+            double lightTolerance = 4.0; // degrees tolerance around goalX
+
+            if (tag24 != null) {
+                double tx = tag24.getTargetXDegrees();
+                if (Math.abs(tx - goalX) <= lightTolerance) {
+                    light.setPosition(1); // target is within range, turn on light
+                } else {
+                    light.setPosition(0);   // target outside range, turn off
+                }
+            } else {
+                light.setPosition(0);       // no target, turn off
+            }
+
 
             turn = Range.clip(driverTurn + autoTurn, -1.0, 1.0);
 
@@ -344,7 +391,7 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());
             telemetry.addData("Far Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("kP lbumper/rbumper", kP);
-            telemetry.addData("kD square/triangle", kD);
+            telemetry.addData("kD up_dpad/down_dpad", kD);
             
             LLStatus status = limelight.getStatus();
             //telemetry.addData("Name", "%s",
