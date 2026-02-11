@@ -13,11 +13,23 @@ public class FlyPID {
     private final DcMotorEx rightShootMotor;
     private final Servo rightGateServo, leftGateServo;
 
+    public static final double RANGE_10 = 1000;
+    public static final double RANGE_20 = 1100; //good
+    public static final double RANGE_30 = 1100; //good
+    public static final double RANGE_40 = 1100; //good
+    public static final double RANGE_50 = 1175; //good
+    public static final double RANGE_60 = 1210; //maybe
+    public static final double RANGE_70 = 1600;
+    public static final double RANGE_80 = 1700;
+    public static final double RANGE_90 = 1800;
+    public static final double RANGE_100 = 1900;
     public static final double TARGET_VELOCITY = 1100;
-    public static final double MID_VELOCITY = 1250;
-    public static final double FAR_VELOCITY = 2100;
+    public static final double MID_VELOCITY = 1400;
+    public static final double FAR_VELOCITY = 2000;
 
-    public static final double IDLE_VELOCITY = TARGET_VELOCITY / 1.1; // 575
+
+
+    public static final double IDLE_VELOCITY = RANGE_10 / 1.1; // 575
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
     private final double LEFT_GATE_OPEN_POS = 0.2167;
     private final double RIGHT_GATE_CLOSED_POS = 0.095;
@@ -60,15 +72,106 @@ public class FlyPID {
     }
 
     /** Call every loop while active */
-    public Action spinUp() {
+    public Action spinUp30() {
         return packet -> {
             rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
             leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
-            leftShootMotor.setVelocity(TARGET_VELOCITY);
+            leftShootMotor.setVelocity(RANGE_30);
             rightShootMotor.setPower(1.0);
             double velocity = leftShootMotor.getVelocity();
             packet.put("Flywheel TPS", velocity);
-            packet.put("At Speed", velocity >= TARGET_VELOCITY * 0.97);
+            packet.put("At Speed", velocity >= RANGE_30 * 0.97);
+
+            return false; // keep running
+        };
+    }   /** Call every loop while active */
+    public Action spinUp40() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(RANGE_40);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= RANGE_40 * 0.97);
+
+            return false; // keep running
+        };
+    }   /** Call every loop while active */
+    public Action spinUp50() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(RANGE_50);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= RANGE_50 * 0.97);
+
+            return false; // keep running
+        };
+    }   /** Call every loop while active */
+    public Action spinUp60() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(RANGE_60);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= RANGE_60 * 0.97);
+
+            return false; // keep running
+        };
+    }   /** Call every loop while active */
+    public Action spinUp70() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(RANGE_70);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= RANGE_70 * 0.97);
+
+            return false; // keep running
+        };
+    }   /** Call every loop while active */
+    public Action spinUp80() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(RANGE_80);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= RANGE_80 * 0.97);
+
+            return false; // keep running
+        };
+    }   /** Call every loop while active */
+    public Action spinUp90() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(RANGE_90);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= RANGE_90 * 0.97);
+
+            return false; // keep running
+        };
+    }   /** Call every loop while active */
+    public Action spinUp100() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(RANGE_100);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= RANGE_100 * 0.97);
 
             return false; // keep running
         };
@@ -86,7 +189,19 @@ public class FlyPID {
             return false; // keep running
         };
     }
+    public Action spinUp() {
+        return packet -> {
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+            leftShootMotor.setVelocity(TARGET_VELOCITY);
+            rightShootMotor.setPower(1.0);
+            double velocity = leftShootMotor.getVelocity();
+            packet.put("Flywheel TPS", velocity);
+            packet.put("At Speed", velocity >= TARGET_VELOCITY * 0.97);
 
+            return false; // keep running
+        };
+    }
     public Action spinUpFar() {
         return packet -> {
             rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
@@ -100,7 +215,6 @@ public class FlyPID {
             return false; // keep running
         };
     }
-
     /** Call every loop while idle */
     public Action idle() {
         return packet -> {
@@ -130,16 +244,33 @@ public class FlyPID {
     public boolean atIdleSpeed() {
         return leftShootMotor.getVelocity() >= IDLE_VELOCITY * 0.97;
     }
-    public boolean atSpeed() {
-        return leftShootMotor.getVelocity() >= TARGET_VELOCITY * 0.97;
+    public boolean atSpeed30() {
+        return leftShootMotor.getVelocity() >= RANGE_30 * 0.97;
     }
-
-    public boolean atFarSpeed() {
-        return leftShootMotor.getVelocity() >= FAR_VELOCITY * 0.97;
+    public boolean atSpeed40() {
+        return leftShootMotor.getVelocity() >= RANGE_40 * 0.97;
     }
-    public boolean atMidSpeed() {
-        return leftShootMotor.getVelocity() >= MID_VELOCITY * 0.97;
+    public boolean atSpeed50() {
+        return leftShootMotor.getVelocity() >= RANGE_50 * 0.97;
     }
+    public boolean atSpeed60() {
+        return leftShootMotor.getVelocity() >= RANGE_60 * 0.97;
+    }
+    public boolean atSpeed70() {
+        return leftShootMotor.getVelocity() >= RANGE_70 * 0.97;
+    }
+    public boolean atSpeed80() {
+        return leftShootMotor.getVelocity() >= RANGE_80 * 0.97;
+    }
+    public boolean atSpeed90() {
+        return leftShootMotor.getVelocity() >= RANGE_90 * 0.97;
+    }
+    public boolean atSpeed100() {
+        return leftShootMotor.getVelocity() >= RANGE_100 * 0.97;
+    }
+    public boolean atSpeed() { return leftShootMotor.getVelocity() >= TARGET_VELOCITY * 0.97; }
+    public boolean atFarSpeed() {return leftShootMotor.getVelocity() >= FAR_VELOCITY * 0.97;}
+    public boolean atMidSpeed() { return leftShootMotor.getVelocity() >= MID_VELOCITY * 0.97;}
 
 }
 
