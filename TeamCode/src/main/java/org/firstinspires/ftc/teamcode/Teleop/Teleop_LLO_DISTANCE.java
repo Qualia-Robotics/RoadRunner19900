@@ -62,7 +62,7 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
     double maxTurnDelta = 0.08; // per loop
 
     /* ---------------------------- LIMELIGHT DISTANCE THRESHOLDS ---------------------------- */
-    // meters (Limelight botpose is meters)
+    // inches from goal
     double CLOSE_DIST = 50;
     double MID_DIST   = 74;
     // FAR = anything above MID_DIST
