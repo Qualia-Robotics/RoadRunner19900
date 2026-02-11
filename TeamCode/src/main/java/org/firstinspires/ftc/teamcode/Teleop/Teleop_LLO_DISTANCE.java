@@ -63,7 +63,15 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
 
     /* ---------------------------- LIMELIGHT DISTANCE THRESHOLDS ---------------------------- */
     // meters (Limelight botpose is meters)
-    double CLOSE_DIST = 50;
+    double RANGE_30 = 30;
+    double RANGE_40 = 40;
+    double RANGE_50 = 50;
+    double RANGE_60 = 60;
+    double RANGE_70 = 70;
+    double RANGE_80 = 80;
+    double RANGE_90 = 90;
+    double RANGE_100 = 100;
+
     double MID_DIST   = 74;
     // FAR = anything above MID_DIST
     /*------------------------- controller based PID tuning (temporary)----------------------------*/
@@ -72,8 +80,14 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
     /* ---------------------------------- SHOOT MACRO STATES ------------------------------------- */
     enum ShootState {
         IDLE,
-        SPINUP,
-        SPINUPMID,
+        SPINUP30,
+        SPINUP40,
+        SPINUP50,
+        SPINUP60,
+        SPINUP70,
+        SPINUP80,
+        SPINUP90,
+        SPINUP100,
         SPINUPFAR,
         SHOOT,
         DONE
@@ -179,9 +193,9 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
             if (tag24 != null) {
                 double ty = tag24.getTargetYDegrees();
 
-                double limelightMountAngleDegrees = 15.0;
-                double limelightLensHeightInches = 11.0;
-                double goalHeightInches = 29.0;
+                double limelightMountAngleDegrees = 13.75;
+                double limelightLensHeightInches = 11.1;
+                double goalHeightInches = 29.5;
 
                 double angleToGoalDegrees = limelightMountAngleDegrees + ty;
                 double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
@@ -278,12 +292,25 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
 
                 double distance = distanceFromLimelightToGoalInches;
 
-                if (distance < CLOSE_DIST) {
-                    shootState = ShootState.SPINUP;       // close
-                } else if (distance > CLOSE_DIST && distance < MID_DIST) {
-                    shootState = ShootState.SPINUPMID;    // mid
+                if (distance < RANGE_30) {
+                    shootState = ShootState.SPINUP30;
+                } else if (distance > RANGE_30 && distance < RANGE_40) {
+                    shootState = ShootState.SPINUP30;
+                } else if (distance > RANGE_40 && distance < RANGE_50) {
+                    shootState = ShootState.SPINUP40;
+                } else if (distance > RANGE_50 && distance < RANGE_60) {
+                    shootState = ShootState.SPINUP50;
+                } else if (distance > RANGE_60 && distance < RANGE_70) {
+                    shootState = ShootState.SPINUP60;
+                } else if (distance > RANGE_70 && distance < RANGE_80) {
+                    shootState = ShootState.SPINUP70;
+                } else if (distance > RANGE_80 && distance < RANGE_90) {
+                    shootState = ShootState.SPINUP80;
+                } else if (distance > RANGE_90 && distance < RANGE_100) {
+                    shootState = ShootState.SPINUP90;
+
                 } else {
-                    shootState = ShootState.SPINUPFAR;    // far
+                    shootState = shootState.SPINUPFAR;
                 }
 
                 shootTimer.reset();
@@ -297,21 +324,119 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
                 case IDLE:
                     // do nothing
                     break;
-
-                case SPINUP:
+                case SPINUP30:
                     if (flywheelAction == null) {
-                        flywheelAction = flywheel.spinUp();
+                        flywheelAction = flywheel.spinUp30();
                     }
                     flywheelAction.run(packet);
 
                     rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
-                    if (flywheel.atSpeed()) {
+                    if (flywheel.atSpeed30()) {
                         shootTimer.reset();
                         shootState = ShootState.SHOOT;
                     }
                     break;
+                case SPINUP40:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUp40();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atSpeed40()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+                    break;
+                case SPINUP50:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUp50();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atSpeed50()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+                    break;
+                case SPINUP60:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUp60();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atSpeed60()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+                    break;
+                case SPINUP70:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUp70();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atSpeed70()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+                    break;
+                case SPINUP80:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUp80();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atSpeed80()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+                    break;
+                case SPINUP90:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUp90();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atSpeed90()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+                    break;
+                case SPINUP100:
+                    if (flywheelAction == null) {
+                        flywheelAction = flywheel.spinUp100();
+                    }
+                    flywheelAction.run(packet);
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (flywheel.atSpeed100()) {
+                        shootTimer.reset();
+                        shootState = ShootState.SHOOT;
+                    }
+                    break;
+
 
                 case SPINUPFAR:
                     if (flywheelAction == null) {
@@ -323,20 +448,6 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
                     if (flywheel.atFarSpeed()) {
-                        shootTimer.reset();
-                        shootState = ShootState.SHOOT;
-                    }
-                    break;
-                case SPINUPMID:
-                    if (flywheelAction == null) {
-                        flywheelAction = flywheel.spinUpMid();
-                    }
-                    flywheelAction.run(packet);
-
-                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
-                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
-
-                    if (flywheel.atMidSpeed()) {
                         shootTimer.reset();
                         shootState = ShootState.SHOOT;
                     }
@@ -387,7 +498,6 @@ public class Teleop_LLO_DISTANCE extends LinearOpMode {
             }
         /* ------------------------------------ TELEMETRY ---------------------------------------- */
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
-            telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());
             telemetry.addData("Far Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("kP lbumper/rbumper", kP);
