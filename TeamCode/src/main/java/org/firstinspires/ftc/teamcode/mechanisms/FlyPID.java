@@ -27,7 +27,10 @@ public class FlyPID {
     public static final double MID_VELOCITY = 1400;
     public static final double FAR_VELOCITY = 2000;
 
-
+    public double calculateRPM(double distance) {
+        // Linear model fitted from your 30–60 data
+        return 3.8 * distance + 985;
+    }
 
     public static final double IDLE_VELOCITY = RANGE_10 / 1.1; // 575
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
@@ -241,6 +244,28 @@ public class FlyPID {
             return false; // finishes immediately
         };
     }
+
+    public Action spinUpCalc(double distance) {
+        return packet -> {
+
+            double targetRPM = calculateRPM(distance);
+
+            rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+            leftShootMotor.setVelocity(targetRPM);
+            rightShootMotor.setPower(1.0);
+
+            double velocity = leftShootMotor.getVelocity();
+
+            packet.put("Target RPM", targetRPM);
+            packet.put("Current RPM", velocity);
+            packet.put("At Speed", velocity >= targetRPM * 0.97);
+
+            return false;
+        };
+    }
+
     public boolean atIdleSpeed() {
         return leftShootMotor.getVelocity() >= IDLE_VELOCITY * 0.97;
     }
@@ -271,6 +296,10 @@ public class FlyPID {
     public boolean atSpeed() { return leftShootMotor.getVelocity() >= TARGET_VELOCITY * 0.97; }
     public boolean atFarSpeed() {return leftShootMotor.getVelocity() >= FAR_VELOCITY * 0.97;}
     public boolean atMidSpeed() { return leftShootMotor.getVelocity() >= MID_VELOCITY * 0.97;}
+    public boolean atCalcSpeed(double distance) {
+        double targetRPM = calculateRPM(distance);
+        return leftShootMotor.getVelocity() >= targetRPM * 0.97;
+    }
 
 }
 
