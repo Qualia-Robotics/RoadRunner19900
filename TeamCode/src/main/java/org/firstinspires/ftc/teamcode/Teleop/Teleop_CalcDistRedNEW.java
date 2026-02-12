@@ -81,10 +81,12 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
 
     /* ------------------------------- -AUTO TURN LOGIC AND MATH --------------------------------- */
     private double calculateAutoTurn(double currentTxDegrees) {
-        error = currentTxDegrees - goalX;
-        curTime = getRuntime();
+        // Compute error and timing
+        double error = currentTxDegrees - goalX;
+        double curTime = getRuntime();
         double dt = Math.max(0.001, curTime - lastTime);
 
+        // Deadband: within tolerance → no turn
         if (Math.abs(error) <= angleTolerance) {
             lastError = error;
             lastTurnCmd = 0;
@@ -92,26 +94,31 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
             return 0;
         }
 
-        double pTerm = error * kP;
-        double dTerm = ((error - lastError) / dt) * kD;
+        // PD controller
+        double pTerm = kP * error;
+        double dTerm = kD * (error - lastError) / dt;
         double output = pTerm + dTerm;
 
+        // Enforce minimum turn power
         if (Math.abs(output) < MIN_AUTO_TURN) {
             output = Math.copySign(MIN_AUTO_TURN, output);
         }
 
+        // Clip to max turn power
         output = Range.clip(output, -MAX_AUTO_TURN, MAX_AUTO_TURN);
 
-        double delta = output - lastTurnCmd;
-        delta = Range.clip(delta, -maxTurnDelta, maxTurnDelta);
-        double smoothedTurn = lastTurnCmd + delta;
+        // Smooth rate of change
+        double delta = Range.clip(output - lastTurnCmd, -maxTurnDelta, maxTurnDelta);
+        double smoothed = lastTurnCmd + delta;
 
+        // Update state
         lastError = error;
-        lastTurnCmd = smoothedTurn;
+        lastTurnCmd = smoothed;
         lastTime = curTime;
 
-        return smoothedTurn;
+        return smoothed;
     }
+
 
     private void resetAutoAlignState() {
         error = 0;
@@ -296,7 +303,6 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
                     if (flywheelAction == null) {
                         flywheelAction = flywheel.spinUpCalc(targetDistance);
                     }
-                    flywheelAction = flywheel.spinUpCalc(targetDistance);
                     flywheelAction.run(packet);
 
                     rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
