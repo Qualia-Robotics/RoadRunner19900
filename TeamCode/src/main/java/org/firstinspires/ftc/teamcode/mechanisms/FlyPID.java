@@ -29,7 +29,7 @@ public class FlyPID {
 
     public double calculateRPM(double distance) {
         // Linear model fitted from your 30–60 data
-        return 3.8 * distance + 985;
+        return 3.8 * distance + 965;
     }
 
     public static final double IDLE_VELOCITY = RANGE_10 / 1.1; // 575

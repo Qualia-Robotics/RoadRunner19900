@@ -64,7 +64,6 @@ public class RedCollabClose extends LinearOpMode {
                         new SleepAction(0.1),
 
                         intake.FastIntaking(),
-
                         new SleepAction(.6),
 
                         flywheel.idle(),
@@ -150,6 +149,8 @@ public class RedCollabClose extends LinearOpMode {
 
                         intake.FastIntaking(),
                         new SleepAction(.8),
+
+                        flywheel.idle(),
 
                         // MOVE TO COLLECT ROW 2 with different heading
                         drive.actionBuilder(shootPose)

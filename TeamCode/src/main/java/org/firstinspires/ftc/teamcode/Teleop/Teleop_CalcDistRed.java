@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 
 import java.util.List;
 
-@TeleOp(name="Teleop_LLO_DISTANCE", group="1) Main OpModes")
-public class Teleop_CalcDist extends LinearOpMode {
+@TeleOp(name="Teleop_CalcDistRed", group="1) Main OpModes")
+public class Teleop_CalcDistRed extends LinearOpMode {
 
     /*------------------------------------ GATE POSITIONS ---------------------------------------- */
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
@@ -57,6 +57,7 @@ public class Teleop_CalcDist extends LinearOpMode {
 
     /* ---------------------------- LIMELIGHT DISTANCE THRESHOLDS ---------------------------- */
     // inches from goal
+    private double lastSeenDist = 30;
     double targetDistance = 0;
     double CLOSE_DIST = 50;
     double RANGE_30 = 30;
@@ -275,9 +276,10 @@ public class Teleop_CalcDist extends LinearOpMode {
 
             boolean circle = gamepad1.circle;
 
-            if (circle && !lastCircle && shootState == ShootState.IDLE && tag24 != null) {
+            if (circle && !lastCircle && shootState == ShootState.IDLE) {
 
                 targetDistance = distanceFromLimelightToGoalInches;
+                lastSeenDist = targetDistance;
 
                 if (!Double.isNaN(distanceFromLimelightToGoalInches)) {
                     targetDistance = Range.clip(distanceFromLimelightToGoalInches, 30, 110);
@@ -286,6 +288,9 @@ public class Teleop_CalcDist extends LinearOpMode {
 
                 shootState = ShootState.SPINUP;
                 shootTimer.reset();
+            }
+            else if (tag24 == null) {
+                targetDistance = lastSeenDist;
             }
 
             lastCircle = circle;
