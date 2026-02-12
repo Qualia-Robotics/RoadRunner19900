@@ -261,7 +261,7 @@ public class Teleop_CalcDistBlue extends LinearOpMode {
 
             turn = Range.clip(driverTurn + autoTurn, -1.0, 1.0);
             //turn = Range.clip(autoTurn, -1.0, 1.0); //if this doesnt work its something else
-
+            //test in midair
             drive.drive(forward, strafe, turn);
         /* -------------------------------- ANALOG POWER INTAKE -----------------------------------*/
             double intakePower = gamepad1.right_trigger * MAX_POWER;
