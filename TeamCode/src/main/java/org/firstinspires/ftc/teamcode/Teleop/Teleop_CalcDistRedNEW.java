@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
@@ -42,12 +43,13 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
     // Constants
     private final double MAX_POWER = 0.8;
     /* ----------------------------  LIMELIGHT BASED PD controller --------------------------------*/
-    double kP = 0.015;
+    double kP = 0.025;
+    //kp 0.025 // kd 0.0024
     double error = 0;
     double lastError = 0;
     double goalX = -4; //offset goal
     double angleTolerance = .75;
-    double kD = 0.0004;
+    double kD = 0.0024;
     double curTime = 0;
     double lastTime = 0;
     // Drive variables
@@ -78,6 +80,7 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
     ShootState shootState = ShootState.IDLE;
     ElapsedTime shootTimer = new ElapsedTime();
     boolean lastCircle = false;
+
 
     /* ------------------------------- -AUTO TURN LOGIC AND MATH --------------------------------- */
     private double calculateAutoTurn(double currentTxDegrees) {
@@ -345,18 +348,23 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
 
             /* -------------------------- STEP SIZE SWITCHER (TEMPORARY) ----------------------------*/
             if(gamepad1.dpadLeftWasPressed()){
+                new SleepAction(1);
                 stepIndex = (stepIndex + 1) % stepSizes.length;
             }
             if(gamepad1.leftBumperWasPressed()){
+                new SleepAction(1);
                 kP += stepSizes[stepIndex];
             }
             if(gamepad1.rightBumperWasPressed()){
+                new SleepAction(1);
                 kP -= stepSizes[stepIndex];
             }
             if(gamepad1.dpad_up){
+                new SleepAction(1);
                 kD += stepSizes[stepIndex];
             }
             if(gamepad1.dpad_down){
+                new SleepAction(1);
                 kD -= stepSizes[stepIndex];
             }
         /* ------------------------------------ TELEMETRY ---------------------------------------- */
