@@ -22,14 +22,14 @@ import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 
 import java.util.List;
 
-@TeleOp(name="Teleop_CalcDistRedNEW", group="1) Main OpModes")
-public class Teleop_CalcDistRedNEW extends LinearOpMode {
+@TeleOp(name="Teleop_Red", group="1) Main OpModes")
+public class Teleop_Red extends LinearOpMode {
 
     /*------------------------------------ GATE POSITIONS ---------------------------------------- */
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
     private final double LEFT_GATE_OPEN_POS = 0.2167;
-    private final double RIGHT_GATE_CLOSED_POS = 0.1;
-    private final double LEFT_GATE_CLOSED_POS = 0.1;
+    private final double RIGHT_GATE_CLOSED_POS = 0.095;
+    private final double LEFT_GATE_CLOSED_POS = 0.095;
     /* ---------------------------------- HARDWARE VARIABLES --------------------------------------*/
     // Limelight
     private Limelight3A limelight;
@@ -47,7 +47,7 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
     //kp 0.025 // kd 0.0024
     double error = 0;
     double lastError = 0;
-    double goalX = -4; //offset goal
+    double goalX = -3; //offset goal
     double angleTolerance = .75;
     double kD = 0.0024;
     double curTime = 0;
@@ -59,6 +59,8 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
     private final double MAX_AUTO_TURN = 0.45;
     private final double MIN_AUTO_TURN = 0.09;
     private final double DRIVER_TURN_OVERRIDE = 0.15;
+    double lockedShotDistance = 0;
+
 
 
     /* ---------------------------- LIMELIGHT DISTANCE THRESHOLDS ---------------------------- */
@@ -242,18 +244,13 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
             } else {
                 resetAutoAlignState();
             }
-            double lightTolerance = 4.0; // degrees tolerance around goalX
 
             if (tag24 != null) {
-                double tx = tag24.getTargetXDegrees();
-                if (Math.abs(tx - goalX) <= lightTolerance) {
-                    light.setPosition(1); // target is within range, turn on light
+                    light.setPosition(0.6); // target is within range, turn on light
                 } else {
                     light.setPosition(0);   // target outside range, turn off
                 }
-            } else {
-                light.setPosition(0);       // no target, turn off
-            }
+
 
             boolean driverOverridingTurn = Math.abs(driverTurn) > DRIVER_TURN_OVERRIDE;
             if (driverOverridingTurn) {
@@ -278,49 +275,47 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
 
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
 
-                targetDistance = distanceFromLimelightToGoalInches;
-                lastSeenDist = targetDistance;
-
                 if (!Double.isNaN(distanceFromLimelightToGoalInches)) {
-                    targetDistance = Range.clip(distanceFromLimelightToGoalInches, 30, 110);
+                    lastSeenDist = Range.clip(distanceFromLimelightToGoalInches, 30, 110);
                 }
 
+                lockedShotDistance = lastSeenDist;  // LOCK IT HERE
 
                 shootState = ShootState.SPINUP;
                 shootTimer.reset();
             }
-            else if (tag24 == null) {
-                targetDistance = lastSeenDist;
-            }
+
 
             lastCircle = circle;
 
+            // Only update lastSeenDist when the tag is valid AND distance is real
+            if (tag24 != null && !Double.isNaN(distanceFromLimelightToGoalInches)) {
+                lastSeenDist = distanceFromLimelightToGoalInches;
+            }
 
             switch (shootState) {
 
                 case IDLE:
-                    // do nothing
-                    break;
-                case SPINUP:
-
-                    if (flywheelAction == null) {
-                        flywheelAction = flywheel.spinUpCalc(targetDistance);
-                    }
+                    flywheelAction = flywheel.idle();
                     flywheelAction.run(packet);
 
-                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
-                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+                    break;
+                case SPINUP:
+                    flywheelAction = flywheel.spinUpCalc(lockedShotDistance);
+                    flywheelAction.run(packet);
 
-                    if (flywheel.atCalcSpeed(targetDistance)) {
+                    if (flywheel.atCalcSpeed(lockedShotDistance)) {
                         shootTimer.reset();
                         shootState = ShootState.SHOOT;
                     }
-
                     break;
 
 
                 case SHOOT:
-                    if (shootTimer.seconds() > 0.1) {
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (shootTimer.seconds() > 0.35) {
                         leftIntake.setPower(1.0);
                         rightIntake.setPower(1.0);
                     }
@@ -370,10 +365,11 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
         /* ------------------------------------ TELEMETRY ---------------------------------------- */
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("Target Distance", targetDistance);
-            telemetry.addData("At Speed?", flywheel.atCalcSpeed(targetDistance));
+            telemetry.addData("At Speed?", flywheel.atCalcSpeed(lastSeenDist));
             telemetry.addData("kP lbumper/rbumper", kP);
-            telemetry.addData("kD up_dpad/down_dpad", kD);
-            
+            telemetry.addData("kD dpad_up/dpad down", kD);
+            telemetry.addData("Last Seen Distance:", lastSeenDist +"in");
+
             LLStatus status = limelight.getStatus();
             //telemetry.addData("Name", "%s",
                     //status.getName());
@@ -385,14 +381,6 @@ public class Teleop_CalcDistRedNEW extends LinearOpMode {
 
             if (result != null && result.isValid()) {
                 // Access general information
-                Pose3D botpose = result.getBotpose();
-
-                telemetry.addData("tx", result.getTx());
-                telemetry.addData("txnc", result.getTxNC());
-                telemetry.addData("ty", result.getTy());
-                telemetry.addData("tync", result.getTyNC());
-
-                telemetry.addData("Botpose", botpose.toString());
                 if (tag24 != null) {
                     double dist = distanceFromLimelightToGoalInches;
                     telemetry.addData("LL Distance (in", "%.2f", dist);

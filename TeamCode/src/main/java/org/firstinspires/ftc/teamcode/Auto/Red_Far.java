@@ -16,32 +16,26 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
 
 @Config
-@Autonomous(name = "Red12NoClear", group = "Autonomous")
-public class Red12Push extends LinearOpMode {
+@Autonomous(name = "Red_Far", group = "Autonomous")
+public class Red_Far extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
         Pose2d startPose = new Pose2d(39.16, -56.77, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(21.0, -13, Math.toRadians(-48));
+        Pose2d shootPose = new Pose2d(21.0, -13, Math.toRadians(-45));
         Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
-        Pose2d shootPose2 = new Pose2d(20.0, -12, Math.toRadians(-45));
+        Pose2d shootPose2 = new Pose2d(20.0, -12, Math.toRadians(-43));
         Pose2d finishRow1 = new Pose2d(21.4, -45.0, Math.toRadians(-90));
         Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));
         Pose2d finishRow2 = new Pose2d(-1.5, -45.0, Math.toRadians(-90));
         Pose2d openDaGate = new Pose2d(10, -60, Math.toRadians(-180));
-        //Pose2d lineDaGate = new Pose2d(10, -25, Math.toRadians(-90));
-        Pose2d collectRow3 = new Pose2d(-24, -20, Math.toRadians(-90));
-        Pose2d finishRow3 = new Pose2d(-24, -50, Math.toRadians(-90));
-        Pose2d pushPos = new Pose2d(-58, -9.5, Math.toRadians(0));
-        Pose2d pushPosEnd = new Pose2d(-40, -30, Math.toRadians(0));
-
+        Pose2d collectRow3 = new Pose2d(-24,-20,Math.toRadians(-90));
+        Pose2d finishRow3 = new Pose2d(-24,-50, Math.toRadians(-90));
+        Pose2d leavePos = new Pose2d(10, -25, Math.toRadians(-90));
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         FlyPID flywheel = new FlyPID(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-
-        double strafeScale = 0.5; // 50% speed for strafes
-
 
         // Shoot --- Start
         Actions.runBlocking(
@@ -59,25 +53,38 @@ public class Red12Push extends LinearOpMode {
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
-                        new SleepAction(0.2),
+                        new SleepAction(0.1),
 
                         intake.FastIntaking(),
 
-                        new SleepAction(.5),
+                        new SleepAction(.6),
 
                         flywheel.idle(),
 
                         // MOVE TO COLLECT ROW 1
-                        drive.actionBuilder(collectRow1)
+                        drive.actionBuilder(shootPose)
                                 .strafeToLinearHeading(
-                                        finishRow1.position,
-                                        finishRow1.heading)
+                                        collectRow2.position,
+                                        collectRow2.heading)
 
                                 .build(),
+                        drive.actionBuilder(collectRow2)
+                                .strafeToLinearHeading(
+                                        finishRow2.position,
+                                        finishRow2.heading)
 
+                                .build(),
                         intake.stopIntake(),
+                        // OPEN DA GATE
+                        drive.actionBuilder(finishRow2)
+                                .setReversed(true)
+                                .strafeToSplineHeading(
+                                        openDaGate.position,
+                                        openDaGate.heading)
+                                .build(),
+
                         // MOVE INTO SHOOT POSITION
-                        drive.actionBuilder(finishRow1)
+                        drive.actionBuilder(collectRow2)
                                 .strafeToSplineHeading(
                                         shootPose2.position,
                                         shootPose2.heading)
@@ -91,29 +98,25 @@ public class Red12Push extends LinearOpMode {
                         new SleepAction(0.0),
 
                         flywheel.spinUp(),
-                        new SleepAction(0.7),
+                        new SleepAction(0.8),
 
                         intake.FastIntaking(),
                         new SleepAction(1),
 
                         flywheel.idle(),
 
-                        // MOVE TO COLLECT ROW 2 PASSTHROUGH
-                        drive.actionBuilder(shootPose2)
+                        // MOVE TO COLLECT ROW 1
+                        drive.actionBuilder(collectRow1)
                                 .strafeToLinearHeading(
-                                        collectRow2.position,
-                                        collectRow2.heading)
-                                .build(),
-                        drive.actionBuilder(collectRow2)
-                                .strafeToLinearHeading(
-                                        finishRow2.position,
-                                        finishRow2.heading)
-
+                                        finishRow1.position,
+                                        finishRow1.heading)
                                 .build(),
                         intake.stopIntake(),
 
+                        // Step 4: Stop intake at finishRow1
+
                         // Move to shootPose
-                        drive.actionBuilder(finishRow2)
+                        drive.actionBuilder(finishRow1)
                                 .setReversed(true)
                                 .strafeToSplineHeading(
                                         shootPose.position,
@@ -128,10 +131,10 @@ public class Red12Push extends LinearOpMode {
                         new SleepAction(0.0),
 
                         flywheel.spinUp(),
-                        new SleepAction(0.7),
+                        new SleepAction(0.8),
 
                         intake.FastIntaking(),
-                        new SleepAction(.6),
+                        new SleepAction(.8),
 
                         flywheel.idle(),
 
@@ -160,15 +163,17 @@ public class Red12Push extends LinearOpMode {
                                 .build(),
 
                         // Start shooting sequence
+                        intake.stopIntake(),
+                        new SleepAction(0.2),
 
                         intake.ReverseIntaking(),
                         new SleepAction(0.0),
 
                         flywheel.spinUp(),
-                        new SleepAction(0.7),
+                        new SleepAction(0.8),
 
                         intake.FastIntaking(),
-                        new SleepAction(.6),
+                        new SleepAction(.8),
 
                         intake.stopIntake(),
                         flywheel.stop(),
@@ -176,16 +181,12 @@ public class Red12Push extends LinearOpMode {
 
                         drive.actionBuilder(shootPose)
                                 .setReversed(true)
-                                .strafeToSplineHeading(pushPos.position, pushPos.heading)
-                                .build(),
-                        drive.actionBuilder(pushPos)
-                                .setReversed(true)
-                                .strafeToSplineHeading(pushPosEnd.position, pushPosEnd.heading)
+                                .strafeToSplineHeading(leavePos.position, leavePos.heading)
                                 .build()
 
 
-                )
-        );
+                        )
+                        );
 
     }
 }
