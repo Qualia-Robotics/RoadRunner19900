@@ -296,9 +296,7 @@ public class Teleop_Red extends LinearOpMode {
             switch (shootState) {
 
                 case IDLE:
-                    flywheelAction = flywheel.idle();
-                    flywheelAction.run(packet);
-
+                    //nothing right now
                     break;
                 case SPINUP:
                     flywheelAction = flywheel.spinUpCalc(lockedShotDistance);
@@ -315,7 +313,7 @@ public class Teleop_Red extends LinearOpMode {
                     rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
-                    if (shootTimer.seconds() > 0.35) {
+                    if (shootTimer.seconds() > 0.1) {
                         leftIntake.setPower(1.0);
                         rightIntake.setPower(1.0);
                     }

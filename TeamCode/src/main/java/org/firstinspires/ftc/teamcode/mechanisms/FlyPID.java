@@ -38,16 +38,16 @@ public class FlyPID {
     private final double RIGHT_GATE_CLOSED_POS = 0.095;
     private final double LEFT_GATE_CLOSED_POS = 0.095;
 
-    double f = 0.0006;
+    //double f = 0.0006;
 
-    public double BangBangChicken
+   /* public double BangBangChicken
             (double cur, double vel) {
         if (cur < vel) {
             return 1;
         } else {
             return f * vel;
         }
-    }
+    }*/
 
     public void manualPower(double power) {
         leftShootMotor.setPower(power);
@@ -78,15 +78,15 @@ public class FlyPID {
         //i
         //d Limits change in velocity
         //f provides an anticipatory, open-loop control input that helps motors quickly reach a target speed or position by directly countering known forces like gravity or friction, reducing reliance on the feedback loop to correct errors and making the system more responsive and stable, especially for velocity control
-       /* PIDFCoefficients shooterPID = new PIDFCoefficients(
-                50.0,
+        PIDFCoefficients shooterPID = new PIDFCoefficients(
+                90.0,
                 0.0,
                 0.0,
                 12);
         leftShootMotor.setPIDFCoefficients(
-                DcMotor.RunMode.RUN_USING_ENCODER,
+                DcMotorEx.RunMode.RUN_USING_ENCODER,
                 shooterPID
-        );*/
+        );
     }
 
     /** Call every loop while active */
@@ -150,11 +150,10 @@ public class FlyPID {
             double targetRPM = calculateRPM(distance);
             double velocity = leftShootMotor.getVelocity();
 
-
             rightGateServo.setPosition(RIGHT_GATE_CLOSED_POS);
             leftGateServo.setPosition(LEFT_GATE_CLOSED_POS);
 
-            leftShootMotor.setPower(BangBangChicken(velocity, targetRPM));
+            leftShootMotor.setVelocity(targetRPM);
             rightShootMotor.setPower(1.0);
 
             packet.put("Target RPM", targetRPM);
@@ -165,33 +164,7 @@ public class FlyPID {
         };
     }
 
-    public boolean atIdleSpeed() {
-        return leftShootMotor.getVelocity() >= IDLE_VELOCITY * 0.97;
-    }
-    public boolean atSpeed30() {
-        return leftShootMotor.getVelocity() >= RANGE_30 * 0.97;
-    }
-    public boolean atSpeed40() {
-        return leftShootMotor.getVelocity() >= RANGE_40 * 0.97;
-    }
-    public boolean atSpeed50() {
-        return leftShootMotor.getVelocity() >= RANGE_50 * 0.97;
-    }
-    public boolean atSpeed60() {
-        return leftShootMotor.getVelocity() >= RANGE_60 * 0.97;
-    }
-    public boolean atSpeed70() {
-        return leftShootMotor.getVelocity() >= RANGE_70 * 0.97;
-    }
-    public boolean atSpeed80() {
-        return leftShootMotor.getVelocity() >= RANGE_80 * 0.97;
-    }
-    public boolean atSpeed90() {
-        return leftShootMotor.getVelocity() >= RANGE_90 * 0.97;
-    }
-    public boolean atSpeed100() {
-        return leftShootMotor.getVelocity() >= RANGE_100 * 0.97;
-    }
+
     public boolean atSpeed() { return leftShootMotor.getVelocity() >= TARGET_VELOCITY * 0.97; }
     public boolean atFarSpeed() {return leftShootMotor.getVelocity() >= FAR_VELOCITY * 0.97;}
     public boolean atMidSpeed() { return leftShootMotor.getVelocity() >= MID_VELOCITY * 0.97;}
