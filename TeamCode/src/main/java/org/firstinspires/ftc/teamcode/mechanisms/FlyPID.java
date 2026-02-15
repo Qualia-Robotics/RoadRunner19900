@@ -25,11 +25,11 @@ public class FlyPID {
     public static final double RANGE_100 = 1900;
     public static final double TARGET_VELOCITY = 1100;
     public static final double MID_VELOCITY = 1400;
-    public static final double FAR_VELOCITY = 2000;
+    public static final double FAR_VELOCITY = 1506.7;
 
     public double calculateRPM(double distance) {
         // Linear model fitted from your 30–60 data
-        return 0.05*(distance)*(distance)-0.6*(distance)+1069.5;
+        return 0.05*(distance)*(distance)-0.6*(distance)+1050.67;
     }
 
     public static final double IDLE_VELOCITY = RANGE_10 / 1.1; // 575

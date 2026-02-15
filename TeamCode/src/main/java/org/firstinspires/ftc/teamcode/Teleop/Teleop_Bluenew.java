@@ -16,14 +16,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 
 import java.util.List;
 
-//@TeleOp(name="Teleop_Blue", group="1) Main OpModes")
-public class Teleop_Blue extends LinearOpMode {
+@TeleOp(name="Teleop_Bluenew", group="1) Main OpModes")
+public class Teleop_Bluenew extends LinearOpMode {
 
     /*------------------------------------ GATE POSITIONS ---------------------------------------- */
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
@@ -43,13 +42,13 @@ public class Teleop_Blue extends LinearOpMode {
     // Constants
     private final double MAX_POWER = 0.8;
     /* ----------------------------  LIMELIGHT BASED PD controller --------------------------------*/
-    double kP = 0.025;
+    double kP = 0.02;
     //kp 0.025 // kd 0.0024
     double error = 0;
     double lastError = 0;
-    double goalX = -3; //offset goal
-    double angleTolerance = .75;
-    double kD = 0.0024;
+    double goalX = 3.5; //offset goal
+    double angleTolerance = .45;
+    double kD = 0.0019;
     double curTime = 0;
     double lastTime = 0;
     // Drive variables
@@ -76,12 +75,17 @@ public class Teleop_Blue extends LinearOpMode {
     enum ShootState {
         IDLE,
         SPINUP,
+        SPINUPFAR,
+        PULSE_FEED,
         SHOOT,
         DONE
     }
     ShootState shootState = ShootState.IDLE;
     ElapsedTime shootTimer = new ElapsedTime();
     boolean lastCircle = false;
+    int pulseCount = 0;
+    boolean pulseOn = false;
+    ElapsedTime pulseTimer = new ElapsedTime();
 
 
     /* ------------------------------- -AUTO TURN LOGIC AND MATH --------------------------------- */
@@ -134,7 +138,7 @@ public class Teleop_Blue extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        /* ----------------------------------- HARDWARE MAPPING ---------------------------------------*/
+    /* ----------------------------------- HARDWARE MAPPING ---------------------------------------*/
         fl = hardwareMap.get(DcMotor.class, "leftFront");
         bl = hardwareMap.get(DcMotor.class, "leftBack");
         fr = hardwareMap.get(DcMotor.class, "rightFront");
@@ -214,10 +218,10 @@ public class Teleop_Blue extends LinearOpMode {
             if (tag20 != null) {
                 double tx = tag20.getTargetXDegrees();
                 double ty = tag20.getTargetYDegrees();
-                telemetry.addData("Tag24 tx", tx);
-                telemetry.addData("Tag24 ty", ty);
+                telemetry.addData("Tag20 tx", tx);
+                telemetry.addData("Tag20 ty", ty);
             } else {
-                telemetry.addData("Tag24", "not visible");
+                telemetry.addData("Tag20", "not visible");
             }
             /* ------------------------------ LIMELIGHT DISTANCE MATH -------------------------------------*/
             double distanceFromLimelightToGoalInches = Double.NaN;
@@ -236,6 +240,15 @@ public class Teleop_Blue extends LinearOpMode {
                         (goalHeightInches - limelightLensHeightInches)
                                 / Math.tan(angleToGoalRadians);
             }
+            // Dynamically adjust goalX based on distance
+            if (!Double.isNaN(lastSeenDist)) {
+                if (lastSeenDist > 110) {
+                    goalX = 6.7;   // example offset for far shots
+                } else {
+                    goalX = 3.5;   // default offset
+                }
+            }
+
             /*-------------------------------- AUTO ALIGN ROTATION LOGIC ------------------------------*/
 
             if (gamepad1.a && tag20 != null) {
@@ -246,10 +259,10 @@ public class Teleop_Blue extends LinearOpMode {
             }
 
             if (tag20 != null) {
-                light.setPosition(0.6); // target is within range, turn on light
-            } else {
-                light.setPosition(0);   // target outside range, turn off
-            }
+                    light.setPosition(0.6); // target is within range, turn on light
+                } else {
+                    light.setPosition(0);   // target outside range, turn off
+                }
 
 
             boolean driverOverridingTurn = Math.abs(driverTurn) > DRIVER_TURN_OVERRIDE;
@@ -259,31 +272,37 @@ public class Teleop_Blue extends LinearOpMode {
                 turn = Range.clip(driverTurn + autoTurn, -1.0, 1.0);
             }
             drive.drive(forward, strafe, turn);
-            /* -------------------------------- ANALOG POWER INTAKE -----------------------------------*/
+        /* -------------------------------- ANALOG POWER INTAKE -----------------------------------*/
             double intakePower = gamepad1.right_trigger * MAX_POWER;
             double outtakePower = gamepad1.left_trigger * MAX_POWER;
             double finalPower = intakePower - outtakePower;
 
-            /* ---------------------------------- MANUAL SHOOTING -------------------------------------*/
+        /* ---------------------------------- MANUAL SHOOTING -------------------------------------*/
             if (shootState == ShootState.IDLE) {
                 leftIntake.setPower(finalPower);
                 rightIntake.setPower(finalPower);
             }
-            /*------------------------------------ SHOOT MACRO ----------------------------------------*/
+        /*------------------------------------ SHOOT MACRO ----------------------------------------*/
 
             boolean circle = gamepad1.circle;
 
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
 
                 if (!Double.isNaN(distanceFromLimelightToGoalInches)) {
-                    lastSeenDist = Range.clip(distanceFromLimelightToGoalInches, 30, 110);
+                    lastSeenDist = Range.clip(distanceFromLimelightToGoalInches, 30, 130);
                 }
 
-                lockedShotDistance = lastSeenDist;  // LOCK IT HERE
+                lockedShotDistance = lastSeenDist;
 
-                shootState = ShootState.SPINUP;
+                if (lockedShotDistance > 110) {
+                    shootState = ShootState.SPINUPFAR;
+                } else {
+                    shootState = ShootState.SPINUP;
+                }
+
                 shootTimer.reset();
             }
+
 
 
             lastCircle = circle;
@@ -296,16 +315,74 @@ public class Teleop_Blue extends LinearOpMode {
             switch (shootState) {
 
                 case IDLE:
-                    // do nothing
+                    //nothing right now
                     break;
                 case SPINUP:
                     flywheelAction = flywheel.spinUpCalc(lockedShotDistance);
                     flywheelAction.run(packet);
 
                     if (flywheel.atCalcSpeed(lockedShotDistance)) {
-                        shootTimer.reset();
-                        shootState = ShootState.SHOOT;
+
+                        flywheelAction = flywheel.spinUpCalc(lockedShotDistance);
+                        flywheelAction.run(packet);
+                        if (flywheel.atCalcSpeed(lockedShotDistance)) {
+                            shootTimer.reset();
+                            shootState = ShootState.SHOOT;
+                        }
+                        break;
                     }
+
+                case SPINUPFAR:
+
+                    // Use fixed RPM version
+                    flywheelAction = flywheel.spinUpFar();
+                    flywheelAction.run(packet);
+
+                    if (flywheel.atFarSpeed()) {
+
+                        if (lockedShotDistance >= 100 && lockedShotDistance <= 130) {
+                            pulseCount = 0;
+                            pulseOn = true;
+                            pulseTimer.reset();
+                            shootState = ShootState.PULSE_FEED;
+                        } else {
+                            shootTimer.reset();
+                            shootState = ShootState.SHOOT;
+                        }
+                    }
+
+                    break;
+
+
+                case PULSE_FEED:
+
+                    rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+                    leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
+                    if (pulseOn) {
+                        leftIntake.setPower(1.0);
+                        rightIntake.setPower(1.0);
+
+                        if (pulseTimer.seconds() >= 0.1367) {
+                            pulseOn = false;
+                            pulseTimer.reset();
+                        }
+                    } else {
+                        leftIntake.setPower(0);
+                        rightIntake.setPower(0);
+
+                        if (pulseTimer.seconds() >= 0.4) {
+                            pulseCount++;
+                            pulseTimer.reset();
+
+                            if (pulseCount >= 3) {
+                                shootState = ShootState.DONE;
+                            } else {
+                                pulseOn = true;
+                            }
+                        }
+                    }
+
                     break;
 
 
@@ -313,7 +390,7 @@ public class Teleop_Blue extends LinearOpMode {
                     rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
                     leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
-                    if (shootTimer.seconds() > 0.35) {
+                    if (shootTimer.seconds() > 0.1) {
                         leftIntake.setPower(1.0);
                         rightIntake.setPower(1.0);
                     }
@@ -360,18 +437,17 @@ public class Teleop_Blue extends LinearOpMode {
                 new SleepAction(1);
                 kD -= stepSizes[stepIndex];
             }
-            /* ------------------------------------ TELEMETRY ---------------------------------------- */
+        /* ------------------------------------ TELEMETRY ---------------------------------------- */
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("Target Distance", targetDistance);
             telemetry.addData("At Speed?", flywheel.atCalcSpeed(lastSeenDist));
             telemetry.addData("kP lbumper/rbumper", kP);
-            telemetry.addData("kP square/triangle", kD);
-
+            telemetry.addData("kD dpad_up/dpad down", kD);
             telemetry.addData("Last Seen Distance:", lastSeenDist +"in");
 
             LLStatus status = limelight.getStatus();
             //telemetry.addData("Name", "%s",
-            //status.getName());
+                    //status.getName());
             telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
                     status.getTemp(), status.getCpu(),(int)status.getFps());
             telemetry.addData("Pipeline", "Index: %d, Type: %s",

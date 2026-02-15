@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 
 import java.util.List;
 
-@TeleOp(name="Teleop_Red", group="1) Main OpModes")
+//@TeleOp(name="Teleop_Red", group="1) Main OpModes")
 public class Teleop_Red extends LinearOpMode {
 
     /*------------------------------------ GATE POSITIONS ---------------------------------------- */
@@ -276,7 +276,7 @@ public class Teleop_Red extends LinearOpMode {
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
 
                 if (!Double.isNaN(distanceFromLimelightToGoalInches)) {
-                    lastSeenDist = Range.clip(distanceFromLimelightToGoalInches, 30, 110);
+                    lastSeenDist = Range.clip(distanceFromLimelightToGoalInches, 30, 130);
                 }
 
                 lockedShotDistance = lastSeenDist;  // LOCK IT HERE

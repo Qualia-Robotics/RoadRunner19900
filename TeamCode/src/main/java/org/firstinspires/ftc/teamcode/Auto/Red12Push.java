@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
 
 @Config
-@Autonomous(name = "Red12NoClear", group = "Autonomous")
+@Autonomous(name = "Red12Push", group = "Autonomous")
 public class Red12Push extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -25,6 +25,8 @@ public class Red12Push extends LinearOpMode {
         Pose2d shootPose = new Pose2d(21.0, -13, Math.toRadians(-48));
         Pose2d collectRow1 = new Pose2d(21.4, -10.0, Math.toRadians(-90));
         Pose2d shootPose2 = new Pose2d(20.0, -12, Math.toRadians(-45));
+        Pose2d shootPose3 = new Pose2d(20.0, -12, Math.toRadians(-53));
+
         Pose2d finishRow1 = new Pose2d(21.4, -45.0, Math.toRadians(-90));
         Pose2d collectRow2 = new Pose2d(-1.5, -20.0, Math.toRadians(-90));
         Pose2d finishRow2 = new Pose2d(-1.5, -45.0, Math.toRadians(-90));
@@ -116,8 +118,8 @@ public class Red12Push extends LinearOpMode {
                         drive.actionBuilder(finishRow2)
                                 .setReversed(true)
                                 .strafeToSplineHeading(
-                                        shootPose.position,
-                                        shootPose.heading)
+                                        shootPose3.position,
+                                        shootPose3.heading)
                                 .build(),
 
                         // Start shooting sequence
@@ -136,7 +138,7 @@ public class Red12Push extends LinearOpMode {
                         flywheel.idle(),
 
                         // MOVE TO COLLECT ROW 3
-                        drive.actionBuilder(shootPose)
+                        drive.actionBuilder(shootPose3)
                                 .strafeToLinearHeading(
                                         collectRow3.position,
                                         collectRow3.heading

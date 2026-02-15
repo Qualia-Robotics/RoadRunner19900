@@ -16,15 +16,15 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
 
 @Config
-@Autonomous(name = "Red_Far", group = "Autonomous")
-public class Red_Far extends LinearOpMode {
+@Autonomous(name = "Blue_Far", group = "Autonomous")
+public class Blue_Far extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
-        Pose2d shootPose = new Pose2d(7.8, 6.7, Math.toRadians(-24));
-        Pose2d intakePose = new Pose2d(11.5, -32, Math.toRadians(-90));
-        Pose2d pickUpFar = new Pose2d(11.5, -42, Math.toRadians(-90));
+        Pose2d shootPose = new Pose2d(7.8, -6.7, Math.toRadians(22));
+        Pose2d intakePose = new Pose2d(10.5, 25, Math.toRadians(90));
+        Pose2d pickUpFar = new Pose2d(10.5, 42, Math.toRadians(90));
 
 
 
@@ -52,12 +52,22 @@ public class Red_Far extends LinearOpMode {
                         intake.FastIntaking(),
                         new SleepAction(.15),
                         intake.stopIntake(),
-                        new SleepAction(.4),
+                        new SleepAction(.5),
 
                         intake.FastIntaking(),
                         new SleepAction(.15),
                         intake.stopIntake(),
-                        new SleepAction(.4),
+                        new SleepAction(.5),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.5),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.5),
 
                         intake.FastIntaking(),
                         new SleepAction(.15),
@@ -71,6 +81,11 @@ public class Red_Far extends LinearOpMode {
                                         intakePose.heading)
 
                                 .build()
+
+
+                        // MOVE INTO SHOOT POSITION
+
+
 
                         )
                         );

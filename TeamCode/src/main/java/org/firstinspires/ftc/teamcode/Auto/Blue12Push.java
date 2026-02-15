@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
 
 @Config
-@Autonomous(name = "Blue12NoClear", group = "Autonomous")
+@Autonomous(name = "Blue12Push", group = "Autonomous")
 public class Blue12Push extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -26,8 +26,8 @@ public class Blue12Push extends LinearOpMode {
         Pose2d shootPose2 = new Pose2d(19.0, 13, Math.toRadians(49));
         Pose2d collectRow1 = new Pose2d(12.4, 11.0, Math.toRadians(90));
         Pose2d finishRow1 = new Pose2d(12.4, 38.0, Math.toRadians(90));
-        Pose2d collectRow2 = new Pose2d(-6.5, 6.0, Math.toRadians(90));
-        Pose2d finishRow2 = new Pose2d(-6.5, 40.0, Math.toRadians(90));
+        Pose2d collectRow2 = new Pose2d(-7.1, 8.0, Math.toRadians(90));
+        Pose2d finishRow2 = new Pose2d(-7.1, 41.0, Math.toRadians(90));
         Pose2d openDaGate = new Pose2d(10, 60, Math.toRadians(180));
         Pose2d collectRow3 = new Pose2d(-31,16,Math.toRadians(90));
         Pose2d finishRow3 = new Pose2d(-31,42, Math.toRadians(90));

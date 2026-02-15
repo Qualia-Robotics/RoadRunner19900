@@ -25,9 +25,9 @@ public class BlueCollabClose extends LinearOpMode {
         Pose2d shootPose = new Pose2d(19.0, 13, Math.toRadians(49));
         Pose2d shootPose2 = new Pose2d(19.0, 13, Math.toRadians(51));
         Pose2d collectRow1 = new Pose2d(13.4, 11.0, Math.toRadians(90));
-        Pose2d finishRow1 = new Pose2d(13.4, 37.0, Math.toRadians(90));
-        Pose2d collectRow2 = new Pose2d(-6.5, 6.0, Math.toRadians(90));
-        Pose2d finishRow2 = new Pose2d(-6.5, 40.0, Math.toRadians(90));
+        Pose2d finishRow1 = new Pose2d(13.4, 38.0, Math.toRadians(90));
+        Pose2d collectRow2 = new Pose2d(-7.1, 8.0, Math.toRadians(90));
+        Pose2d finishRow2 = new Pose2d(-7.1, 43.0, Math.toRadians(90));
         Pose2d openDaGate = new Pose2d(10, 57, Math.toRadians(180));
         Pose2d openDaGate2 = new Pose2d(0, 57, Math.toRadians(0));
         Pose2d alignRamp1 = new Pose2d(-7, 41, Math.toRadians(70));
