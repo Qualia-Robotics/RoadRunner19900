@@ -38,6 +38,10 @@ public class Teleop extends LinearOpMode {
     private CRServo kickerServo;
     private Servo rightGateServo, leftGateServo;
 
+    double TeleTarVel = 1100;   // starting RPM
+    boolean lastDpadUpAdjust = false;
+    boolean lastDpadDownAdjust = false;
+
     // Constants
     private final double MAX_POWER = 0.8;
 
@@ -125,6 +129,23 @@ public class Teleop extends LinearOpMode {
             bl.setPower(forward - strafe + turn);
             fr.setPower(forward - strafe - turn);
             br.setPower(forward + strafe - turn);
+
+            boolean dpadUpAdjust = gamepad1.dpad_up;
+            boolean dpadDownAdjust = gamepad1.dpad_down;
+
+// Increase by 25 once per press
+            if (dpadUpAdjust && !lastDpadUpAdjust && shootState == ShootState.IDLE) {
+                TeleTarVel += 25;
+            }
+
+// Decrease by 25 once per press
+            if (dpadDownAdjust && !lastDpadDownAdjust && shootState == ShootState.IDLE) {
+                TeleTarVel -= 25;
+            }
+
+            lastDpadUpAdjust = dpadUpAdjust;
+            lastDpadDownAdjust = dpadDownAdjust;
+            flywheel.TARGET_VELOCITY = TeleTarVel;
 
             /* -------- INTAKE -------- */
             double intakePower = gamepad1.right_trigger * MAX_POWER;
@@ -241,7 +262,7 @@ public class Teleop extends LinearOpMode {
                     break;
 
             }
-            //----------- FAR SHOOT MACRO (DPAD UP)-------------
+           /* //----------- FAR SHOOT MACRO (DPAD UP)-------------
             boolean dpadUp = gamepad1.dpad_up;
             if (dpadUp && !lastCircle && shootState == ShootState.IDLE) {
                 shootState = ShootState.SPINUPFAR;
@@ -303,7 +324,7 @@ public class Teleop extends LinearOpMode {
                     shootState = ShootState.IDLE;
                     break;
 
-            }
+            }*/
 
 
             /* -------- TELEMETRY -------- */
@@ -314,6 +335,7 @@ public class Teleop extends LinearOpMode {
                             pos.getY(DistanceUnit.INCH),
                             pos.getHeading(AngleUnit.DEGREES)));
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
+            telemetry.addData("Target Velocity", TeleTarVel);
             telemetry.addData("At speed?", flywheel.atSpeed());
             telemetry.addData("At Far speed?", flywheel.atFarSpeed());
             telemetry.addData("Status", pinpoint.getDeviceStatus());

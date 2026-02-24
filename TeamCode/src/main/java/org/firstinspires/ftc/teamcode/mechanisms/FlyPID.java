@@ -14,18 +14,11 @@ public class FlyPID {
     private final Servo rightGateServo, leftGateServo;
 
     public static final double RANGE_10 = 1000;
-    public static final double RANGE_20 = 1100; //good
-    public static final double RANGE_30 = 1100; //good
-    public static final double RANGE_40 = 1115; //good
-    public static final double RANGE_50 = 1175; //good
-    public static final double RANGE_60 = 1210; //maybe
-    public static final double RANGE_70 = 1600;
-    public static final double RANGE_80 = 1700;
-    public static final double RANGE_90 = 1800;
-    public static final double RANGE_100 = 1900;
-    public static final double TARGET_VELOCITY = 1100;
+
+    public double TARGET_VELOCITY = 1100;
     public static final double MID_VELOCITY = 1400;
     public static final double FAR_VELOCITY = 1506.7;
+
 
     public double calculateRPM(double distance) {
         // Linear model fitted from your 30–60 data

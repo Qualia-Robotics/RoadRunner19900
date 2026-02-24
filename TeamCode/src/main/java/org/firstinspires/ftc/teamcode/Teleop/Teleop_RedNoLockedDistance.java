@@ -21,11 +21,14 @@ import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
 
 import java.util.List;
 
-@TeleOp(name="Teleop_Rednew", group="1) Main OpModes")
-public class Teleop_Rednew extends LinearOpMode {
+@TeleOp(name="Teleop_RednewNoLocked Distance", group="1) Main OpModes")
+public class Teleop_RedNoLockedDistance extends LinearOpMode {
 
     /*------------------------------------ GATE POSITIONS ---------------------------------------- */
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
+    public FlyPID TARGET_VELOCITY;
+    public double TeleTarVel;
+
     private final double LEFT_GATE_OPEN_POS = 0.2167;
     private final double RIGHT_GATE_CLOSED_POS = 0.095;
     private final double LEFT_GATE_CLOSED_POS = 0.095;
@@ -193,6 +196,7 @@ public class Teleop_Rednew extends LinearOpMode {
         curTime = getRuntime();
 
         while (opModeIsActive()) {
+
             TelemetryPacket packet = new TelemetryPacket();
 
             /* -------------------------------------- DRIVE ------------------------------------------ */
@@ -229,8 +233,8 @@ public class Teleop_Rednew extends LinearOpMode {
             if (tag24 != null) {
                 double ty = tag24.getTargetYDegrees();
 
-                double limelightMountAngleDegrees = 8;
-                double limelightLensHeightInches = 11.1;
+                double limelightMountAngleDegrees = 10;
+                double limelightLensHeightInches = 13.75;
                 double goalHeightInches = 29.5;
 
                 double angleToGoalDegrees = limelightMountAngleDegrees + ty;
@@ -292,9 +296,9 @@ public class Teleop_Rednew extends LinearOpMode {
                     lastSeenDist = Range.clip(distanceFromLimelightToGoalInches, 30, 130);
                 }
 
-                lockedShotDistance = lastSeenDist;
+                //lockedShotDistance = lastSeenDist;
 
-                if (lockedShotDistance > 110) {
+                if (lastSeenDist > 110) {
                     shootState = ShootState.SPINUPFAR;
                 } else {
                     shootState = ShootState.SPINUP;
@@ -318,14 +322,14 @@ public class Teleop_Rednew extends LinearOpMode {
                     //nothing right now
                     break;
                 case SPINUP:
-                    flywheelAction = flywheel.spinUpCalc(lockedShotDistance);
+                    flywheelAction = flywheel.spinUpCalc(lastSeenDist);
                     flywheelAction.run(packet);
 
-                    if (flywheel.atCalcSpeed(lockedShotDistance)) {
+                    if (flywheel.atCalcSpeed(lastSeenDist)) {
 
-                        flywheelAction = flywheel.spinUpCalc(lockedShotDistance);
+                        flywheelAction = flywheel.spinUpCalc(lastSeenDist);
                         flywheelAction.run(packet);
-                        if (flywheel.atCalcSpeed(lockedShotDistance)) {
+                        if (flywheel.atCalcSpeed(lastSeenDist)) {
                             shootTimer.reset();
                             shootState = ShootState.SHOOT;
                         }
@@ -340,7 +344,7 @@ public class Teleop_Rednew extends LinearOpMode {
 
                     if (flywheel.atFarSpeed()) {
 
-                        if (lockedShotDistance >= 100 && lockedShotDistance <= 130) {
+                        if (lastSeenDist >= 100 && lastSeenDist <= 130) {
                             pulseCount = 0;
                             pulseOn = true;
                             pulseTimer.reset();

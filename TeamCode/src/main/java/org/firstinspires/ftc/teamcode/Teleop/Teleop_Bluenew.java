@@ -229,8 +229,8 @@ public class Teleop_Bluenew extends LinearOpMode {
             if (tag20 != null) {
                 double ty = tag20.getTargetYDegrees();
 
-                double limelightMountAngleDegrees = 13.75;
-                double limelightLensHeightInches = 11.1;
+                double limelightMountAngleDegrees = 10;
+                double limelightLensHeightInches = 13.75;
                 double goalHeightInches = 29.5;
 
                 double angleToGoalDegrees = limelightMountAngleDegrees + ty;
