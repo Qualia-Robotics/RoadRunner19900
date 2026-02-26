@@ -50,7 +50,7 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
     double error = 0;
     double lastError = 0;
     double goalX = -3.5; //offset goal
-    double angleTolerance = .45;
+    double angleTolerance = .25;
     double kD = 0.0019;
     double curTime = 0;
     double lastTime = 0;
@@ -233,7 +233,7 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
             if (tag24 != null) {
                 double ty = tag24.getTargetYDegrees();
 
-                double limelightMountAngleDegrees = 10;
+                double limelightMountAngleDegrees = 11.5;
                 double limelightLensHeightInches = 13.75;
                 double goalHeightInches = 29.5;
 
@@ -247,7 +247,7 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
             // Dynamically adjust goalX based on distance
             if (!Double.isNaN(lastSeenDist)) {
                 if (lastSeenDist > 110) {
-                    goalX = -6.7;   // example offset for far shots
+                    goalX = -6;   // example offset for far shots
                 } else {
                     goalX = -3.5;   // default offset
                 }
@@ -293,7 +293,7 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
             if (circle && !lastCircle && shootState == ShootState.IDLE) {
 
                 if (!Double.isNaN(distanceFromLimelightToGoalInches)) {
-                    lastSeenDist = Range.clip(distanceFromLimelightToGoalInches, 30, 130);
+                    lastSeenDist = Range.clip(distanceFromLimelightToGoalInches, 30, 150);
                 }
 
                 //lockedShotDistance = lastSeenDist;
@@ -344,7 +344,7 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
 
                     if (flywheel.atFarSpeed()) {
 
-                        if (lastSeenDist >= 100 && lastSeenDist <= 130) {
+                        if (lastSeenDist >= 100 && lastSeenDist <= 200) {
                             pulseCount = 0;
                             pulseOn = true;
                             pulseTimer.reset();
@@ -367,7 +367,7 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
                         leftIntake.setPower(1.0);
                         rightIntake.setPower(1.0);
 
-                        if (pulseTimer.seconds() >= 0.1367) {
+                        if (pulseTimer.seconds() >= 0.1) {
                             pulseOn = false;
                             pulseTimer.reset();
                         }
@@ -375,11 +375,11 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
                         leftIntake.setPower(0);
                         rightIntake.setPower(0);
 
-                        if (pulseTimer.seconds() >= 0.4) {
+                        if (pulseTimer.seconds() >= 0.15) {
                             pulseCount++;
                             pulseTimer.reset();
 
-                            if (pulseCount >= 3) {
+                            if (pulseCount >= 6) {
                                 shootState = ShootState.DONE;
                             } else {
                                 pulseOn = true;
@@ -421,7 +421,7 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
             }
 
             /* -------------------------- STEP SIZE SWITCHER (TEMPORARY) ----------------------------*/
-            if(gamepad1.dpadLeftWasPressed()){
+           /* if(gamepad1.dpadLeftWasPressed()){
                 new SleepAction(1);
                 stepIndex = (stepIndex + 1) % stepSizes.length;
             }
@@ -445,8 +445,8 @@ public class Teleop_RedNoLockedDistance extends LinearOpMode {
             telemetry.addData("Flywheel TPS", flywheel.getVelocity());
             telemetry.addData("Target Distance", targetDistance);
             telemetry.addData("At Speed?", flywheel.atCalcSpeed(lastSeenDist));
-            telemetry.addData("kP lbumper/rbumper", kP);
-            telemetry.addData("kD dpad_up/dpad down", kD);
+            //telemetry.addData("kP lbumper/rbumper", kP);
+            //telemetry.addData("kD dpad_up/dpad down", kD);
             telemetry.addData("Last Seen Distance:", lastSeenDist +"in");
 
             LLStatus status = limelight.getStatus();

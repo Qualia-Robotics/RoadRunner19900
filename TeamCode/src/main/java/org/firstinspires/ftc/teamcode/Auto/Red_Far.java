@@ -23,8 +23,8 @@ public class Red_Far extends LinearOpMode {
         waitForStart();
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
         Pose2d shootPose = new Pose2d(7.8, 6.7, Math.toRadians(-24));
-        Pose2d intakePose = new Pose2d(11.5, -32, Math.toRadians(-90));
-        Pose2d pickUpFar = new Pose2d(11.5, -42, Math.toRadians(-90));
+        Pose2d intakePose = new Pose2d(35.1, -56.5, Math.toRadians(180));
+        Pose2d pickUpPose = new Pose2d(13.5, -55, Math.toRadians(180));
 
 
 
@@ -49,6 +49,7 @@ public class Red_Far extends LinearOpMode {
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
+                        new SleepAction(.5),
                         intake.FastIntaking(),
                         new SleepAction(.15),
                         intake.stopIntake(),
@@ -61,7 +62,6 @@ public class Red_Far extends LinearOpMode {
 
                         intake.FastIntaking(),
                         new SleepAction(.15),
-                        intake.stopIntake(),
                         flywheel.stop(),
 
                         // MOVE TO COLLECT ROW 1
@@ -69,6 +69,12 @@ public class Red_Far extends LinearOpMode {
                                 .strafeToLinearHeading(
                                         intakePose.position,
                                         intakePose.heading)
+
+                                .build(),
+                        drive.actionBuilder(intakePose)
+                                .strafeToLinearHeading(
+                                        pickUpPose.position,
+                                        pickUpPose.heading)
 
                                 .build()
 

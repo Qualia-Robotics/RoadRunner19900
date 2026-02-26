@@ -17,13 +17,14 @@ public class FlyPID {
 
     public double TARGET_VELOCITY = 1100;
     public static final double MID_VELOCITY = 1400;
-    public static final double FAR_VELOCITY = 1506.7;
+    public static final double FAR_VELOCITY = 1445.67;
 
 
     public double calculateRPM(double distance) {
-        // Linear model fitted from your 30–60 data
-        return 0.05*(distance)*(distance)-0.6*(distance)+1050.67;
+    // cubic regression based on 10 pts
+    return 0.016835*(distance)*(distance)*(distance)-3.01515*(distance)*(distance)+180.867*(distance)-2580.80808;
     }
+    //0.05*(distance)*(distance)-0.6*(distance)+1050.67;
 
     public static final double IDLE_VELOCITY = RANGE_10 / 1.1; // 575
     private final double RIGHT_GATE_OPEN_POS = 0.2167;
