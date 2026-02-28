@@ -100,13 +100,15 @@ public class FlyPID {
     }
     public Action spinUpFar() {
         return packet -> {
-            rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
-            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
+
             leftShootMotor.setVelocity(FAR_VELOCITY);
             rightShootMotor.setPower(1.0);
             double velocity = leftShootMotor.getVelocity();
             packet.put("Far Flywheel TPS", velocity);
             packet.put("At Far Speed", velocity >= FAR_VELOCITY * 0.97);
+
+            rightGateServo.setPosition(RIGHT_GATE_OPEN_POS);
+            leftGateServo.setPosition(LEFT_GATE_OPEN_POS);
 
             return false; // keep running
         };
