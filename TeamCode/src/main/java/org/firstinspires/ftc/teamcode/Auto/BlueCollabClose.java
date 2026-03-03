@@ -30,9 +30,9 @@ public class BlueCollabClose extends LinearOpMode {
         Pose2d finishRow2 = new Pose2d(-7.1, 43.0, Math.toRadians(90));
         Pose2d openDaGate = new Pose2d(10, 57, Math.toRadians(180));
         Pose2d openDaGate2 = new Pose2d(0, 57, Math.toRadians(0));
-        Pose2d alignRamp1 = new Pose2d(-7, 41, Math.toRadians(70));
-        Pose2d alignRamp2 = new Pose2d(-7, 55, Math.toRadians(60));
-        Pose2d alignRamp3 = new Pose2d(-20.5, 53, Math.toRadians(50));
+        Pose2d alignRamp1 = new Pose2d(-7, 42.5, Math.toRadians(70));
+        Pose2d alignRamp2 = new Pose2d(-7, 56.5, Math.toRadians(60));
+        Pose2d alignRamp3 = new Pose2d(-20.5, 54.5, Math.toRadians(50));
         Pose2d leavePos = new Pose2d(5, 25, Math.toRadians(90));
 
 

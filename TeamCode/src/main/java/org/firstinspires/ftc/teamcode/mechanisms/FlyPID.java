@@ -15,9 +15,9 @@ public class FlyPID {
 
     public static final double RANGE_10 = 1000;
 
-    public double TARGET_VELOCITY = 1100;
+    public double TARGET_VELOCITY = 995;
     public static final double MID_VELOCITY = 1400;
-    public static final double FAR_VELOCITY = 1445.67;
+    public static final double FAR_VELOCITY = 1340.67;
 
 
     public double calculateRPM(double distance) {

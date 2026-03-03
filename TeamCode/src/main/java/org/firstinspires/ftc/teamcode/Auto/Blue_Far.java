@@ -12,7 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.FlyPID;
+import org.firstinspires.ftc.teamcode.mechanisms.Gate;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
+import org.firstinspires.ftc.teamcode.mechanisms.Gate;
 
 
 @Config
@@ -22,16 +24,20 @@ public class Blue_Far extends LinearOpMode {
     public void runOpMode() {
         waitForStart();
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+        Pose2d leavePose = new Pose2d(20, 0, Math.toRadians(0));
         Pose2d shootPose = new Pose2d(7.8, -6.7, Math.toRadians(22));
-        Pose2d intakePose = new Pose2d(10.5, 25, Math.toRadians(90));
-        Pose2d pickUpFar = new Pose2d(10.5, 42, Math.toRadians(90));
-
-
-
+        Pose2d shootPose2 = new Pose2d(7.8, -6.7, Math.toRadians(27));
+        Pose2d intakePose = new Pose2d(35.1, 55, Math.toRadians(180));
+        Pose2d pickUpPose = new Pose2d(13.5, 54, Math.toRadians(180));
+        Pose2d passThroughPose = new Pose2d(16.5, 49, Math.toRadians(180));
+        Pose2d intakePose2 = new Pose2d(10, 21, Math.toRadians(90));
+        Pose2d pickUpPose2 = new Pose2d(51.5, 46, Math.toRadians(5));
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         FlyPID flywheel = new FlyPID(hardwareMap);
         Intake intake = new Intake(hardwareMap);
+        Gate gate = new Gate(hardwareMap);
+
 
         // Shoot --- Start
         Actions.runBlocking(
@@ -49,30 +55,21 @@ public class Blue_Far extends LinearOpMode {
                                 .build(),
 
                         // ===== SHOOT SEQUENCE =====
+                        new SleepAction(1),
                         intake.FastIntaking(),
                         new SleepAction(.15),
                         intake.stopIntake(),
-                        new SleepAction(.5),
+                        new SleepAction(.2),
 
                         intake.FastIntaking(),
                         new SleepAction(.15),
                         intake.stopIntake(),
-                        new SleepAction(.5),
+                        new SleepAction(.2),
 
                         intake.FastIntaking(),
-                        new SleepAction(.15),
-                        intake.stopIntake(),
-                        new SleepAction(.5),
-
-                        intake.FastIntaking(),
-                        new SleepAction(.15),
-                        intake.stopIntake(),
-                        new SleepAction(.5),
-
-                        intake.FastIntaking(),
-                        new SleepAction(.15),
-                        intake.stopIntake(),
-                        flywheel.stop(),
+                        new SleepAction(.3),
+                        //flywheel.idle(),
+                        gate.Close(),
 
                         // MOVE TO COLLECT ROW 1
                         drive.actionBuilder(shootPose)
@@ -80,15 +77,246 @@ public class Blue_Far extends LinearOpMode {
                                         intakePose.position,
                                         intakePose.heading)
 
-                                .build()
+                                .build(),
+                        drive.actionBuilder(intakePose)
+                                .strafeToLinearHeading(
+                                        pickUpPose.position,
+                                        pickUpPose.heading)
+
+                                .build(),
+                        drive.actionBuilder(passThroughPose)
+                                .strafeToLinearHeading(
+                                        shootPose2.position,
+                                        shootPose2.heading)
+
+                                .build(),
+
+                        intake.stopIntake(),
+                        //flywheel.spinUpFar(),
+
+                        // ===== SHOOT SEQUENCE =====
+                        //new SleepAction(1),
+                        gate.Open(),
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.3),
+                        //flywheel.idle(),
+                        gate.Close(),
+                        drive.actionBuilder(shootPose2)
+                                .strafeToLinearHeading(
+                                        intakePose.position,
+                                        intakePose.heading)
+
+                                .build(),
+                        drive.actionBuilder(intakePose)
+                                .strafeToLinearHeading(
+                                        pickUpPose.position,
+                                        pickUpPose.heading)
+
+                                .build(),
+                        drive.actionBuilder(passThroughPose)
+                                .strafeToLinearHeading(
+                                        shootPose2.position,
+                                        shootPose2.heading)
+
+                                .build(),
+
+                        intake.stopIntake(),
+                        flywheel.spinUpFar(),
+
+                        // ===== SHOOT SEQUENCE =====
+                        //new SleepAction(1),
+                        gate.Open(),
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.3),
+                        //flywheel.idle(),
+                        gate.Close(),
+                        drive.actionBuilder(shootPose2)
+                                .strafeToLinearHeading(
+                                        intakePose.position,
+                                        intakePose.heading)
+
+                                .build(),
+                        drive.actionBuilder(intakePose)
+                                .strafeToLinearHeading(
+                                        pickUpPose.position,
+                                        pickUpPose.heading)
+
+                                .build(),
+                        drive.actionBuilder(passThroughPose)
+                                .strafeToLinearHeading(
+                                        shootPose2.position,
+                                        shootPose2.heading)
+
+                                .build(),
+
+                        intake.stopIntake(),
+                        flywheel.spinUpFar(),
 
 
-                        // MOVE INTO SHOOT POSITION
+                        // ===== SHOOT SEQUENCE =====
+                        //new SleepAction(1),
+                        gate.Open(),
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.3),
+                        //flywheel.idle(),
+                        gate.Close(),
+                        drive.actionBuilder(shootPose2)
+                                .strafeToLinearHeading(
+                                        intakePose.position,
+                                        intakePose.heading)
+
+                                .build(),
+                        drive.actionBuilder(intakePose)
+                                .strafeToLinearHeading(
+                                        pickUpPose.position,
+                                        pickUpPose.heading)
+
+                                .build(),
+                        drive.actionBuilder(passThroughPose)
+                                .strafeToLinearHeading(
+                                        shootPose2.position,
+                                        shootPose2.heading)
+
+                                .build(),
+
+                        intake.stopIntake(),
+                        flywheel.spinUpFar(),
+
+                        // ===== SHOOT SEQUENCE =====
+                      //  new SleepAction(1),
+                        gate.Open(),
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.3),
+                        flywheel.stop()
+
+                        // MOVE TO COLLECT ROW 1
+                       /* drive.actionBuilder(shootPose2)
+                                .strafeToLinearHeading(
+                                        intakePose2.position,
+                                        intakePose2.heading)
+
+                                .build(),
+                        drive.actionBuilder(intakePose2)
+                                .strafeToLinearHeading(
+                                        pickUpPose2.position,
+                                        pickUpPose2.heading)
+
+                                .build(),
+                        drive.actionBuilder(pickUpPose2)
+                                .strafeToLinearHeading(
+                                        shootPose2.position,
+                                        shootPose2.heading)
+
+                                .build(),
+
+                        intake.stopIntake(),
+                        flywheel.spinUpFar(),
+
+                        // ===== SHOOT SEQUENCE =====
+                        new SleepAction(0.8),
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.3),
+                        flywheel.idle(),
+
+                        // MOVE TO COLLECT ROW 1
+                        drive.actionBuilder(shootPose2)
+                                .strafeToLinearHeading(
+                                        intakePose2.position,
+                                        intakePose2.heading)
+
+                                .build(),
+                        drive.actionBuilder(intakePose2)
+                                .strafeToLinearHeading(
+                                        pickUpPose2.position,
+                                        pickUpPose2.heading)
+
+                                .build(),
+                        drive.actionBuilder(pickUpPose2)
+                                .strafeToLinearHeading(
+                                        shootPose2.position,
+                                        shootPose2.heading)
+
+                                .build(),
+
+                        intake.stopIntake(),
+                        flywheel.spinUpFar(),
+
+                        // ===== SHOOT SEQUENCE =====
+                        new SleepAction(0.8),
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.15),
+                        intake.stopIntake(),
+                        new SleepAction(.2),
+
+                        intake.FastIntaking(),
+                        new SleepAction(.3),
+                        flywheel.stop(),
 
 
+                        drive.actionBuilder(shootPose2)
+                                .strafeToLinearHeading(
+                                        leavePose.position,
+                                        leavePose.heading)
 
-                        )
-                        );
+                                .build()*/
+                )
+        );
+
 
     }
 }
